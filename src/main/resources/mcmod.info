@@ -1,0 +1,16 @@
+[
+{
+  "modid": "LookingGlass",
+  "name": "Looking Glass",
+  "description": "\"In another moment Alice was through the glass, and had jumped lightly down into the Looking-glass room.\" - Through the Looking-Glass, and What Alice Found There; Lewis Carroll",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://xcompwiz.com",
+  "updateUrl": "",
+  "authorList": ["XCompWiz"],
+  "credits": "shadowking97, for following the plan in my head",
+  "logoFile": "/logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]

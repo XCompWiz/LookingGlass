@@ -1,0 +1,367 @@
+ext.forgeversion     = "1.7.10-10.13.3.1428-1.7.10"
+group                = "com.xcompwiz.lookingglass" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+ext.archivesBaseName = "lookingglass"
+ext.nameCased        = "LookingGlass"
+ext.curseId          = "230541" // project url is http://minecraft.curseforge.com/mc-mods/230541-lookingglass/
+ext.curseReleaseType = "release" //The release type must be either 'alpha', 'beta', or 'release'
+ext.curseIncludeAPI  = true
+ext.curseIncludeDev  = true
+
+// define some stuff.  hereafter referenced as project.varName
+ext.configFile = file "build.properties"
+ext.smallChangelog = file("changes.txt")
+ext.releaseChangelog = file("changelog.txt")
+ext.publishChangelog = file("changes.txt")
+ext.userHome = System.properties["user.home"]
+
+// --------------------------
+// End local config
+// --------------------------
+
+//Configure these through locations.gradle
+ext.jarDeploys = []
+ext.devDeploys = []
+ext.APIDeploys = []
+ext.changelogDeploys = []
+
+buildscript {
+	repositories {
+		mavenCentral()
+		maven {
+			name = "forge"
+			url = "http://files.minecraftforge.net/maven"
+		}
+		maven {
+			name = "sonatype"
+			url = "https://oss.sonatype.org/content/repositories/snapshots/"
+		}
+	}
+	dependencies {
+		classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+	}
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+	ivy {
+		name 'Forge FS legacy'
+		artifactPattern "http://files.minecraftforge.net/[module]/[module]-dev-[revision].[ext]"
+	}
+	maven {
+		name 'ForgeFS'
+		url 'http://files.minecraftforge.net/maven'
+	}
+	maven {
+		name 'MinecraftS3'
+		url 'http://s3.amazonaws.com/Minecraft.Download/libraries'
+	}
+}
+
+apply plugin: 'curseforge'
+apply plugin: 'forge'
+
+if (file('locations.gradle').exists()) {
+	apply from: 'locations.gradle'
+}
+
+if (file('dependencies.gradle').exists()) {
+	apply from: 'dependencies.gradle'
+}
+
+configFile.withReader {
+	// read config. it shall from now on be referenced as simply config or as project.config
+	def prop = new Properties()
+	prop.load(it)
+	ext.config = new ConfigSlurper().parse prop
+}
+
+version = "${config.version.super}.${config.version.major}.${config.version.minor}.${config.version.build}"
+
+// Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
+minecraft {
+	version = project.forgeversion
+	runDir = "../run/client"
+
+	replace "@VERSION@", project.version
+}
+
+processResources
+{
+	// this will ensure that this task is redone when the versions change.
+	inputs.property "version", {"${project.version}"}
+	inputs.property "mcversion", {project.minecraft.version}
+
+	// replace stuff in mcmod.info, nothing else
+	from(sourceSets.main.resources.srcDirs) {
+		include 'mcmod.info'
+
+		// replace version and mcversion
+		expand 'version':"${-> project.version}", 'mcversion':project.minecraft.version
+	}
+
+	// copy everything else, thats not the mcmod.info
+	from(sourceSets.main.resources.srcDirs) {
+		exclude 'mcmod.info'
+	}
+}
+
+// this sets our output jar to have a 'tag' of 'universal' on it
+// It also adds the minecraft version in a custom version name
+// The result is files named <projectname>-<mcversion>-<version>.jar
+jar {
+	classifier = project.version
+	version = project.minecraft.version
+	includeEmptyDirs = false
+	from sourceSets.api.output
+}
+
+// -------------
+// extra jars
+// -------------
+
+// because the normal output has been made to be obfuscated
+task devJar(type: Jar) {
+    from sourceSets.main.output
+    from sourceSets.api.output
+    from sourceSets.api.allSource
+    classifier = 'dev'
+	version = "${project.minecraft.version}-${project.version}"
+}
+
+task apiJar(type: Jar) {
+    from sourceSets.api.output
+    from sourceSets.api.allSource
+    classifier = 'api'
+	version = "${project.minecraft.version}-${project.version}"
+}
+
+task srcJar(type: Jar) {
+    from sourceSets.main.java
+    from sourceSets.api.java
+    classifier = 'src'
+	version = "${project.minecraft.version}-${project.version}"
+}
+
+build.dependsOn apiJar, devJar
+
+// specify artifacts to be uploaded
+artifacts {
+	// the default jar is already here by default
+	archives devJar
+	archives apiJar
+}
+
+// ---------------------------
+// Changelog and Deployments
+// ---------------------------
+
+task("updateChangelog") {
+	inputs.file project.smallChangelog
+	inputs.file project.releaseChangelog
+	outputs.file project.smallChangelog
+	outputs.file project.releaseChangelog
+
+	doLast {
+		def small = project.smallChangelog
+		def release = project.releaseChangelog
+
+		release.text = "[${project.version}]\n${small.text}\n${release.text}"
+		small.text = ""
+	}
+}
+
+task("markChangelog") {
+	inputs.file project.releaseChangelog
+	outputs.file project.releaseChangelog
+
+	doLast {
+		def release = project.releaseChangelog
+		release.text = "[RELEASE]\n${release.text}"
+	}
+	mustRunAfter updateChangelog
+}
+
+project.tasks.curse.dependsOn "markChangelog"
+
+task "deploy" // creates it for later
+task "deployjar" // creates it for later
+
+project.tasks.deploy.dependsOn project.tasks.deployjar
+
+project.tasks.deployjar.dependsOn project.tasks.reobf
+project.tasks.deployjar.dependsOn project.tasks.devJar
+project.tasks.deployjar.dependsOn project.tasks.apiJar
+
+jarDeploys.each { name, dir ->
+	def deployer = task("deploy-${name}", type: Copy) {
+		//from project.configurations.archives  // jars, API jars, whatever
+
+		from {project.tasks.jar.getArchivePath()} // just release jar
+		into dir
+		dependsOn "reobf"
+	}
+	project.tasks.deployjar.dependsOn deployer
+
+	def deleter = task("clean-${name}") << {
+		fileTree(dir()).each { file ->
+			if (!file.isDirectory() && file.name.startsWith(project.archivesBaseName))
+				file.delete()
+		}
+	}
+	deployer.dependsOn deleter
+}
+
+devDeploys.each { name, dir ->
+	def deployer = task("deploy-devjar-${name}", type: Copy) {
+		from {project.tasks.devJar.getArchivePath()} // the dev jar
+		into dir
+		dependsOn "devJar"
+		mustRunAfter "deployjar"
+	}
+	project.tasks.deploy.dependsOn deployer
+
+	def deleter = task("clean-devjar-${name}") << {
+		fileTree(dir()).each { file ->
+			if (!file.isDirectory() && file.name.startsWith(project.archivesBaseName) && file.name.endsWith("${project.devJar.classifier}.jar"))
+				file.delete()
+		}
+	}
+	deleter.mustRunAfter "devJar"
+	deployer.dependsOn deleter
+}
+
+APIDeploys.each { name, dir ->
+	def deployer = task("deploy-apijar-${name}", type: Copy) {
+		from {project.tasks.apiJar.getArchivePath()} // the API
+		into dir
+		dependsOn "apiJar"
+		mustRunAfter "deployjar"
+	}
+	project.tasks.deploy.dependsOn deployer
+
+	def deleter = task("clean-apijar-${name}") << {
+		fileTree(dir()).each { file ->
+			if (!file.isDirectory() && file.name.startsWith(project.archivesBaseName) && file.name.endsWith("${project.apiJar.classifier}.jar"))
+				file.delete()
+		}
+	}
+	deleter.mustRunAfter "apiJar"
+	deployer.dependsOn deleter
+}
+
+changelogDeploys.each { name, dir ->
+	def deployer = task("deploy-changelog-${name}", type: Copy) {
+		from project.releaseChangelog
+		into dir
+		mustRunAfter "updateChangelog"
+	}
+	project.tasks.deploy.dependsOn deployer
+}
+
+// ----------------------
+// Incrementer handling
+// ----------------------
+
+import java.text.DecimalFormat
+def formatter = new DecimalFormat('00')
+def formatters = [new DecimalFormat('0'), new DecimalFormat('0'), new DecimalFormat('0'), new DecimalFormat('00')]
+
+// increment tasks
+def types = ["super", "major", "minor", "build"]
+types.eachWithIndex { type, index ->
+	def incrementer = task("increment-${type}").doLast {
+		// increment
+		int newNum = (config.version[type.toLowerCase()].toString().toInteger()) + 1
+		config.version[type.toLowerCase()] = formatters[index].format(newNum)
+		// set lower #'s to 0
+		types.eachWithIndex { type2, index2 ->
+			if (index2 > index) {
+				config.version[type2.toLowerCase()] = formatters[index2].format(0)
+			}
+		}
+
+		// write back to the file
+		configFile.withWriter {
+			config.toProperties().store(it, "")
+		}
+		project.version = "${config.version.super}.${config.version.major}.${config.version.minor}.${config.version.build}"
+		jar.classifier = "${project.version}"
+		devJar.version = "${project.minecraft.version}-${project.version}"
+		apiJar.version = "${project.minecraft.version}-${project.version}"
+		srcJar.version = "${project.minecraft.version}-${project.version}"
+		project.tasks.sourceMainJava.replace "@VERSION@", project.version
+	}
+
+	task("deploy-$type") {
+		dependsOn incrementer, project.tasks.updateChangelog, project.tasks.deploy
+		group = "Mystcraft"
+		description = "Increments ${type.toLowerCase()} by 1 and the deploys the artifacts"
+	}
+
+	project.tasks.sourceMainJava.mustRunAfter incrementer
+	project.tasks.updateChangelog.mustRunAfter incrementer
+	project.tasks.deploy.mustRunAfter incrementer
+	project.tasks.uploadArchives.mustRunAfter incrementer
+	project.tasks.processResources.mustRunAfter incrementer
+	project.tasks.compileApiJava.mustRunAfter incrementer
+}
+
+curse {
+	apiKey = config.curseforge_key // saved in my properties file. http://minecraft.curseforge.com/my-api-tokens
+	projectId = project.curseId
+	releaseType = project.curseReleaseType //The release type must be either 'alpha', 'beta', or 'release'
+
+	changelog = project.publishChangelog.text
+
+	// the default obfuscated jar is uploaded by default
+	// artifact = project.file("some/jar/to/upload.jar")
+	if (project.curseIncludeAPI) {
+		additionalArtifact {project.tasks.apiJar.getArchivePath()}
+	}
+	if (project.curseIncludeDev) {
+		additionalArtifact {project.tasks.devJar.getArchivePath()}
+	}
+
+	// allows you to add extra compatible MC versions. The one specified in the minecraft{} block is used by default.
+	// addGameVersion "1.7.1"
+	// addGameversion "1.7.0", "1.7.4"
+}
+
+// deployment stuff
+
+configurations { deployerJars }
+
+dependencies { deployerJars "org.apache.maven.wagon:wagon-ssh:2.2" }
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            configuration = configurations.deployerJars
+
+            repository(url: "scp://maven.xcompwiz.com/home/xcompwiz/maven") {
+				authentication(userName: config.mavenuser, password: config.mavenpass)
+            }
+
+            pom {
+                groupId = project.group
+                version = project.version
+                artifactId = project.archivesBaseName
+                project {
+                    name project.archivesBaseName
+                    packaging 'jar'
+                    description project.nameCased
+                    //url project.url //'https://github.com/XCompWiz/...'
+
+                    developers {
+                        developer {
+                            id 'XCompWiz'
+                            name 'XCompWiz'
+                            roles { role 'developer' }
+                        }
+                    }
+                }
+            }
+        }
+	}
+}
