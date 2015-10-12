@@ -8,13 +8,25 @@ Since the Minecraft Client has no concept of other dimensions, LookingGlass give
 It is advised that you work from a released API jar, rather than from the source code provided here.  This will help avoid conflicts in Minecraft instances.
 
 ### Getting the API
+#### Maven Repo
+```
+repositories {
+	maven {
+		name "xcompwiz"
+		url "http://maven.xcompwiz.com"
+	}
+}
+dependencies {
+    compile "com.xcompwiz.lookingglass:lookingglass:0.2.0.00:dev"
+}
+```
+
+#### Manual Download
 You can manually obtain an API jar from the LookingGlass CurseForge page: http://minecraft.curseforge.com/mc-mods/230541-lookingglass
 
 Once equipped with your API version of choice (the most recent one, right?), you can put it in the "jars" folder at the same level as your gradle scripts.  You may need to create this folder.
 You can then either import the jar manually into your workspace or rerun the gradle command to build your workspace of choice:
 ex: gradlew.bat eclipse
-
->A maven repo is coming soon.
 
 ### Getting Started
 LookingGlass uses a very robust but rather complex method of maintaining its API versions.  This allows it to support older versions of the API alongside new versions, but there is a small cost of complexity.
