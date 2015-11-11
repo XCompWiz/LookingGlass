@@ -6,7 +6,7 @@ public interface ICameraAnimator {
 
 	/**
 	 * Sets the look-at target (in block coordinates)
-	 * @param target
+	 * @param target The block target
 	 */
 	void setTarget(ChunkCoordinates target);
 

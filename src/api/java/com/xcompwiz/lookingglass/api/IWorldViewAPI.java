@@ -20,7 +20,7 @@ public interface IWorldViewAPI {
 	 * @param coords The coordinates of the target location. If null, world spawn is used.
 	 * @param width Texture resolution width
 	 * @param height Texture resolution height
-	 * @return A IWorldView object for your use.
+	 * @return A IWorldView object for your use or null if something goes wrong.
 	 */
 	@SideOnly(Side.CLIENT)
 	IWorldView createWorldView(Integer dimid, ChunkCoordinates coords, int width, int height);

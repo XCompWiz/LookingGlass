@@ -22,7 +22,7 @@ public class WrapperBuilder {
 	/**
 	 * Called by the APIProviderImpl to construct the API wrapper passed to it on its construction.
 	 * @param owner
-	 * @return
+	 * @return The instance
 	 */
 	public Object newInstance(String owner) throws IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		return itemCtor.newInstance(owner);

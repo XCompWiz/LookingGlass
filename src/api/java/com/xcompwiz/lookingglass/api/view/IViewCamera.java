@@ -6,6 +6,8 @@ public interface IViewCamera {
 
 	/**
 	 * Adds par1*0.15 to the entity's yaw, and *subtracts* par2*0.15 from the pitch. Clamps pitch from -90 to 90. Both arguments in degrees.
+	 * @param yaw The yaw to be added
+	 * @param pitch The pitch to be subtracted
 	 */
 	public void addRotations(float yaw, int pitch);
 
@@ -77,7 +79,7 @@ public interface IViewCamera {
 	 * @param z The Z coordinate in block space
 	 * @param yl1 The lower (closer to 0) y coordinate of the levels to check for in block space
 	 * @param yl2 The larger (farther from 0) y coordinate of the levels to check for in block space
-	 * @return
+	 * @return True if the levels are loaded locally
 	 */
 	public boolean chunkLevelsExist(int x, int z, int yl1, int yl2);
 }
