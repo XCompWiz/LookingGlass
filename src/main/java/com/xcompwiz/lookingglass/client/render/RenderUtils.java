@@ -50,8 +50,8 @@ public class RenderUtils {
 			EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, framebuffer);
 			GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.5f);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-
-			entityRenderer.updateRenderer();
+			
+			//entityRenderer.updateRenderer();
 
 			int i1 = mc.gameSettings.limitFramerate;
 			if (mc.isFramerateLimitBelowMax()) {
