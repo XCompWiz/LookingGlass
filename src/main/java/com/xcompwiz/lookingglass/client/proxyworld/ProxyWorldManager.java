@@ -119,6 +119,10 @@ public class ProxyWorldManager {
 		EntityLivingBase backup = mc.renderViewEntity;
 		mc.renderViewEntity = view.camera;
 		view.getRenderGlobal().setWorldAndLoadRenderers(proxyworld);
+		// The line of code below prevents block-breaking particles from duplicating
+		// when a WorldView exists in the same dimension as the player. I've haven't
+		// noticed any unwanted results from using this yet.
+		if(proxyworld.provider.dimensionId == Minecraft.getMinecraft().thePlayer.dimension) proxyworld.removeWorldAccess(view.getRenderGlobal());
 		mc.renderViewEntity = backup;
 
 		// Inform the server of the new view

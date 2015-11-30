@@ -54,7 +54,10 @@ public class WorldViewRenderManager {
 					activeview.camera.inventory.mainInventory[playerBackup.inventory.currentItem] = currentClientItem; //Prevents the hand from flickering
 
 					try {
-						mc.entityRenderer.updateRenderer();
+						// TODO: A "fast-falling rain" bug occurs when the two updateRenderer() calls in WorldViewRenderManager
+						// and one in RenderUtils aren't commented out. There doesn't seem to be any issues with not
+						// calling them (everything still looks to render properly), so this is a quick fix for the time being.
+						//mc.entityRenderer.updateRenderer();
 						mc.renderGlobal.updateClouds();
 						mc.theWorld.doVoidFogParticles(MathHelper.floor_double(activeview.camera.posX), MathHelper.floor_double(activeview.camera.posY), MathHelper.floor_double(activeview.camera.posZ));
 						mc.effectRenderer.updateEffects();
@@ -78,7 +81,7 @@ public class WorldViewRenderManager {
 		mc.renderGlobal = renderBackup;
 		mc.theWorld = worldBackup;
 		RenderManager.instance.set(mc.theWorld);
-		mc.entityRenderer.updateRenderer();
+		//mc.entityRenderer.updateRenderer();
 	}
 
 }
