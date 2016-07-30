@@ -54,7 +54,6 @@ public class WorldViewRenderManager {
 					activeview.camera.inventory.mainInventory[playerBackup.inventory.currentItem] = currentClientItem; //Prevents the hand from flickering
 
 					try {
-						mc.entityRenderer.updateRenderer();
 						mc.renderGlobal.updateClouds();
 						mc.theWorld.doVoidFogParticles(MathHelper.floor_double(activeview.camera.posX), MathHelper.floor_double(activeview.camera.posY), MathHelper.floor_double(activeview.camera.posZ));
 						mc.effectRenderer.updateEffects();
@@ -78,7 +77,6 @@ public class WorldViewRenderManager {
 		mc.renderGlobal = renderBackup;
 		mc.theWorld = worldBackup;
 		RenderManager.instance.set(mc.theWorld);
-		mc.entityRenderer.updateRenderer();
 	}
 
 }

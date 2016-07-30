@@ -51,8 +51,6 @@ public class RenderUtils {
 			GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.5f);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-			entityRenderer.updateRenderer();
-
 			int i1 = mc.gameSettings.limitFramerate;
 			if (mc.isFramerateLimitBelowMax()) {
 				entityRenderer.renderWorld(renderTime, (1000000000 / i1));
