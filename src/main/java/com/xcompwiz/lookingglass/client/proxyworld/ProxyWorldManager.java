@@ -98,7 +98,7 @@ public class ProxyWorldManager {
 
 	public static Collection<WorldView> getWorldViews(int dimid) {
 		Collection<WorldView> set = worldviewsets.get(dimid);
-		if (set == null) return Collections.EMPTY_SET;
+		if (set == null) return Collections.emptySet();
 		return Collections.unmodifiableCollection(set);
 	}
 
