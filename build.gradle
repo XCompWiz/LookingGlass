@@ -339,13 +339,13 @@ uploadArchives {
         mavenDeployer {
             configuration = configurations.deployerJars
 
-            repository(url: "scp://maven.xcompwiz.com/home/xcompwiz/maven") {
+            repository(url: config.mavenurl) {
 				authentication(userName: config.mavenuser, password: config.mavenpass)
             }
 
             pom {
                 groupId = project.group
-                version = project.version
+                version = "${-> project.version}"
                 artifactId = project.archivesBaseName
                 project {
                     name project.archivesBaseName
