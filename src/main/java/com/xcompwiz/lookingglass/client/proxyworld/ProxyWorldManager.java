@@ -119,6 +119,15 @@ public class ProxyWorldManager {
 		EntityLivingBase backup = mc.renderViewEntity;
 		mc.renderViewEntity = view.camera;
 		view.getRenderGlobal().setWorldAndLoadRenderers(proxyworld);
+		if(proxyworld.provider.dimensionId == Minecraft.getMinecraft().thePlayer.dimension)  {
+			proxyworld.removeWorldAccess(view.getRenderGlobal());
+		}
+		else if(proxyworld.provider.dimensionId != Minecraft.getMinecraft().thePlayer.dimension){
+			// Since there is no "getWorldAccess" or "hasWorldAccess(dim)" method in WorldClient, 
+			// this is a makeshift way to prevent duplicate world accesses being added
+			proxyworld.removeWorldAccess(view.getRenderGlobal());
+			proxyworld.addWorldAccess(view.getRenderGlobal());
+		}
 		mc.renderViewEntity = backup;
 
 		// Inform the server of the new view
