@@ -84,8 +84,8 @@ public class LookingGlass {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		// Our one and only entity.
-		EntityRegistry.registerModEntity(com.xcompwiz.lookingglass.entity.EntityPortal.class, "lookingglass.portal", 216, this, 64, 10, false);
-
+		EntityRegistry.registerModEntity(new ResourceLocation(LookingGlass.MODID, "portal"), EntityPortal.class, "portal", 216, this, 64, 10, false);
+		
 		sidedProxy.init();
 	}
 
