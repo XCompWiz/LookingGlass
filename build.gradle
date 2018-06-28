@@ -1,4 +1,4 @@
-ext.forgeversion     = "1.7.10-10.13.3.1428-1.7.10"
+ext.forgeversion     = "1.12.2-14.23.3.2676"
 group                = "com.xcompwiz.lookingglass" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 ext.archivesBaseName = "lookingglass"
 ext.nameCased        = "LookingGlass"
@@ -9,10 +9,13 @@ ext.curseIncludeDev  = true
 
 // define some stuff.  hereafter referenced as project.varName
 ext.configFile = file "build.properties"
+ext.passFile = file "passwords.gradle"
 ext.smallChangelog = file("changes.txt")
 ext.releaseChangelog = file("changelog.txt")
 ext.publishChangelog = file("changes.txt")
 ext.userHome = System.properties["user.home"]
+
+ext.pass = []
 
 // --------------------------
 // End local config
@@ -35,12 +38,20 @@ buildscript {
 			name = "sonatype"
 			url = "https://oss.sonatype.org/content/repositories/snapshots/"
 		}
+		maven {
+			name = "CurseGradle"
+			url = "https://plugins.gradle.org/m2/"
+		}
 	}
 	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.0.8'
 	}
 }
 
+apply plugin: 'maven'
+apply plugin: 'com.matthewprenger.cursegradle'
+apply plugin: 'net.minecraftforge.gradle.forge'
 repositories {
 	mavenLocal()
 	mavenCentral()
@@ -58,8 +69,7 @@ repositories {
 	}
 }
 
-apply plugin: 'curseforge'
-apply plugin: 'forge'
+
 
 if (file('locations.gradle').exists()) {
 	apply from: 'locations.gradle'
@@ -76,7 +86,22 @@ configFile.withReader {
 	ext.config = new ConfigSlurper().parse prop
 }
 
+if (passFile.exists()) {
+	passFile.withReader {
+		// read pass file. it shall from now on be referenced as simply pass or as project.pass
+		def prop = new Properties()
+		prop.load(it)
+		ext.pass = new ConfigSlurper().parse prop
+	}
+}
+
 version = "${config.version.super}.${config.version.major}.${config.version.minor}.${config.version.build}"
+
+// Java version
+sourceCompatibility = targetCompatibility = '1.8'
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
 
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
 minecraft {
@@ -84,6 +109,9 @@ minecraft {
 	runDir = "../run/client"
 
 	replace "@VERSION@", project.version
+
+    // Specify the mcp mappings to use
+    mappings = config.mcp_mappings_version
 }
 
 processResources
@@ -110,8 +138,7 @@ processResources
 // It also adds the minecraft version in a custom version name
 // The result is files named <projectname>-<mcversion>-<version>.jar
 jar {
-	classifier = project.version
-	version = project.minecraft.version
+	version = "${project.minecraft.version}-${project.version}"
 	includeEmptyDirs = false
 	from sourceSets.api.output
 }
@@ -182,14 +209,14 @@ task("markChangelog") {
 	mustRunAfter updateChangelog
 }
 
-project.tasks.curse.dependsOn "markChangelog"
+project.tasks.curseforge.dependsOn "markChangelog"
 
 task "deploy" // creates it for later
 task "deployjar" // creates it for later
 
 project.tasks.deploy.dependsOn project.tasks.deployjar
 
-project.tasks.deployjar.dependsOn project.tasks.reobf
+project.tasks.deployjar.dependsOn project.tasks.jar
 project.tasks.deployjar.dependsOn project.tasks.devJar
 project.tasks.deployjar.dependsOn project.tasks.apiJar
 
@@ -199,7 +226,7 @@ jarDeploys.each { name, dir ->
 
 		from {project.tasks.jar.getArchivePath()} // just release jar
 		into dir
-		dependsOn "reobf"
+		dependsOn "jar"
 	}
 	project.tasks.deployjar.dependsOn deployer
 
@@ -286,11 +313,12 @@ types.eachWithIndex { type, index ->
 			config.toProperties().store(it, "")
 		}
 		project.version = "${config.version.super}.${config.version.major}.${config.version.minor}.${config.version.build}"
-		jar.classifier = "${project.version}"
+		jar.version    = "${project.minecraft.version}-${project.version}"
 		devJar.version = "${project.minecraft.version}-${project.version}"
 		apiJar.version = "${project.minecraft.version}-${project.version}"
 		srcJar.version = "${project.minecraft.version}-${project.version}"
 		project.tasks.sourceMainJava.replace "@VERSION@", project.version
+		uploadArchives.repositories.mavenDeployer.pom.version = project.version
 	}
 
 	task("deploy-$type") {
@@ -307,25 +335,31 @@ types.eachWithIndex { type, index ->
 	project.tasks.compileApiJava.mustRunAfter incrementer
 }
 
-curse {
-	apiKey = config.curseforge_key // saved in my properties file. http://minecraft.curseforge.com/my-api-tokens
-	projectId = project.curseId
-	releaseType = project.curseReleaseType //The release type must be either 'alpha', 'beta', or 'release'
+curseforge {
+	apiKey = pass.curseforge_key // saved in my properties file. http://minecraft.curseforge.com/my-api-tokens
+	project {
+		id = project.curseId
+		releaseType = project.curseReleaseType //The release type must be either 'alpha', 'beta', or 'release'
 
-	changelog = project.publishChangelog.text
+		changelog = project.publishChangelog.text
 
-	// the default obfuscated jar is uploaded by default
-	// artifact = project.file("some/jar/to/upload.jar")
-	if (project.curseIncludeAPI) {
-		additionalArtifact {project.tasks.apiJar.getArchivePath()}
+		mainArtifact jar
+
+		// the default obfuscated jar is uploaded by default
+		// artifact = project.file("some/jar/to/upload.jar")
+		if (project.curseIncludeAPI) {
+			addArtifact {project.tasks.apiJar.getArchivePath()}
+		}
+		if (project.curseIncludeDev) {
+			addArtifact {project.tasks.devJar.getArchivePath()}
+		}
+
+		// allows you to add extra compatible MC versions. The one specified in the minecraft{} block is used by default.
+		// addGameVersion "1.7.1"
+		// addGameversion "1.7.0", "1.7.4"
 	}
-	if (project.curseIncludeDev) {
-		additionalArtifact {project.tasks.devJar.getArchivePath()}
-	}
+}
 
-	// allows you to add extra compatible MC versions. The one specified in the minecraft{} block is used by default.
-	// addGameVersion "1.7.1"
-	// addGameversion "1.7.0", "1.7.4"
 }
 
 // deployment stuff
@@ -339,8 +373,8 @@ uploadArchives {
         mavenDeployer {
             configuration = configurations.deployerJars
 
-            repository(url: config.mavenurl) {
-				authentication(userName: config.mavenuser, password: config.mavenpass)
+            repository(url: pass.mavenurl) {
+				authentication(userName: pass.mavenuser, password: pass.mavenpass)
             }
 
             pom {
