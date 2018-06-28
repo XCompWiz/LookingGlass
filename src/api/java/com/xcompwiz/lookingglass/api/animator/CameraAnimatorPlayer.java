@@ -1,9 +1,9 @@
 package com.xcompwiz.lookingglass.api.animator;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ChunkCoordinates;
-
 import com.xcompwiz.lookingglass.api.view.IViewCamera;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * This is a badly approximated "portal render" animator, which makes the camera move based on what direction the player is from some defined point. It doesn't
@@ -21,7 +21,7 @@ public class CameraAnimatorPlayer implements ICameraAnimator {
 	// The entity we are facing. Expected to be the client side player, but could be anything, really.
 	private Entity				player;
 	// The point we are looking at in block coordinates.
-	private ChunkCoordinates	target;
+	private BlockPos	target;
 
 	private boolean				updateY;
 	private float				accum;
@@ -42,8 +42,8 @@ public class CameraAnimatorPlayer implements ICameraAnimator {
 	 * Sets the point we are looking at using block coordinates.
 	 */
 	@Override
-	public void setTarget(ChunkCoordinates target) {
-		this.target = new ChunkCoordinates(target);
+	public void setTarget(BlockPos target) {
+		this.target = new BlockPos(target);
 	}
 
 	@Override
@@ -65,37 +65,37 @@ public class CameraAnimatorPlayer implements ICameraAnimator {
 			accum -= 10000;
 		}
 		if (updateY) updateTargetPosition();
-		double dx = player.posX - reference.posX;
-		double dy = player.posY - (reference.posY + player.yOffset);
-		double dz = player.posZ - reference.posZ;
+		double dx = player.getX() - reference.getX();
+		double dy = player.getY() - (reference.getY() + player.yOffset);
+		double dz = player.getZ() - reference.getZ();
 		double length = Math.sqrt(dx * dx + dz * dz + dy * dy); //TODO: Needs Go Faster
 		float yaw = -(float) Math.atan2(dx, dz);
 		yaw *= 180 / Math.PI;
 		float pitch = (float) Math.asin(dy / length);
 		pitch *= 180 / Math.PI;
-		camera.setLocation(target.posX, target.posY, target.posZ);
+		camera.setLocation(target.getX(), target.getY(), target.getZ());
 		camera.setYaw(yaw);
 		camera.setPitch(pitch);
 	}
 
 	private void updateTargetPosition() {
 		updateY = false;
-		int x = target.posX;
-		int y = target.posY;
-		int z = target.posZ;
+		int x = target.getX();
+		int y = target.getY();
+		int z = target.getZ();
 		if (!camera.chunkExists(x, z)) {
 			if (camera.getBlockData().getBlock(x, y, z).getBlocksMovement(camera.getBlockData(), x, y, z)) {
 				while (y > 0 && camera.getBlockData().getBlock(x, --y, z).getBlocksMovement(camera.getBlockData(), x, y, z))
 					;
-				if (y == 0) y = target.posY;
+				if (y == 0) y = target.getY();
 				else y += 2;
 			} else {
 				while (y < 256 && !camera.getBlockData().getBlock(x, ++y, z).getBlocksMovement(camera.getBlockData(), x, y, z))
 					;
-				if (y == 256) y = target.posY;
+				if (y == 256) y = target.getY();
 				else ++y;
 			}
-			target.posY = y;
+			target = new BlockPos(x, y, z);
 		}
 	}
 

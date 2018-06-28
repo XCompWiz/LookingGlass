@@ -1,17 +1,16 @@
 package com.xcompwiz.lookingglass.entity;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-
 import com.xcompwiz.lookingglass.api.animator.CameraAnimatorPlayer;
 import com.xcompwiz.lookingglass.api.view.IWorldView;
 import com.xcompwiz.lookingglass.client.proxyworld.ProxyWorldManager;
 import com.xcompwiz.lookingglass.client.proxyworld.WorldView;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Despite it's name, this isn't so much a doorway or window as it is a moving picture. More Harry Potter's portraits than Portal's portals. (Man I wish the

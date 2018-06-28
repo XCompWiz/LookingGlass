@@ -1,13 +1,12 @@
 package com.xcompwiz.lookingglass.apiimpl;
 
-import net.minecraft.util.ChunkCoordinates;
-
 import com.xcompwiz.lookingglass.api.IWorldViewAPI;
 import com.xcompwiz.lookingglass.api.view.IWorldView;
 import com.xcompwiz.lookingglass.client.proxyworld.ProxyWorldManager;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * This is the API wrapper (instance) class for the WorldView API at version 1.
@@ -22,7 +21,7 @@ public class LookingGlassAPIWrapper extends APIWrapper implements IWorldViewAPI 
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IWorldView createWorldView(Integer dimid, ChunkCoordinates spawn, int width, int height) {
-		return ProxyWorldManager.createWorldView(dimid, (spawn != null ? new ChunkCoordinates(spawn) : null), width, height);
+	public IWorldView createWorldView(Integer dimid, BlockPos spawn, int width, int height) {
+		return ProxyWorldManager.createWorldView(dimid, (spawn != null ? new BlockPos(spawn) : null), width, height);
 	}
 }

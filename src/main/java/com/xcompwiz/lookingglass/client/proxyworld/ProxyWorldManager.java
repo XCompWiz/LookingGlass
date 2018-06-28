@@ -7,12 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraftforge.common.DimensionManager;
-
 import com.xcompwiz.lookingglass.client.render.FrameBufferContainer;
 import com.xcompwiz.lookingglass.entity.EntityCamera;
 import com.xcompwiz.lookingglass.log.LoggerUtils;
@@ -20,8 +14,13 @@ import com.xcompwiz.lookingglass.network.LookingGlassPacketManager;
 import com.xcompwiz.lookingglass.network.packet.PacketCreateView;
 import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ProxyWorldManager {
@@ -102,7 +101,7 @@ public class ProxyWorldManager {
 		return Collections.unmodifiableCollection(set);
 	}
 
-	public static WorldView createWorldView(int dimid, ChunkCoordinates spawn, int width, int height) {
+	public static WorldView createWorldView(int dimid, BlockPos spawn, int width, int height) {
 		if (ModConfigs.disabled) return null;
 		if (!DimensionManager.isDimensionRegistered(dimid)) return null;
 

@@ -1,9 +1,9 @@
 package com.xcompwiz.lookingglass.client.proxyworld;
 
-import net.minecraft.world.IBlockAccess;
-
 import com.xcompwiz.lookingglass.api.view.IViewCamera;
 import com.xcompwiz.lookingglass.entity.EntityCamera;
+
+import net.minecraft.world.IBlockAccess;
 
 public class ViewCameraImpl implements IViewCamera {
 	private EntityCamera	camera;
@@ -46,17 +46,17 @@ public class ViewCameraImpl implements IViewCamera {
 
 	@Override
 	public double getX() {
-		return this.camera.posX;
+		return this.camera.getX();
 	}
 
 	@Override
 	public double getY() {
-		return this.camera.posY;
+		return this.camera.getY();
 	}
 
 	@Override
 	public double getZ() {
-		return this.camera.posZ;
+		return this.camera.getZ();
 	}
 
 	@Override

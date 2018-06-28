@@ -1,12 +1,12 @@
 package com.xcompwiz.lookingglass.utils;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 
 public class MathUtils {
 
-	public static Vec3 readCoordinates(ByteBuf data) {
-		Vec3 coords = Vec3.createVectorHelper(data.readDouble(), data.readDouble(), data.readDouble());
+	public static Vec3d readCoordinates(ByteBuf data) {
+		Vec3d coords = new Vec3d(data.readDouble(), data.readDouble(), data.readDouble());
 		return coords;
 	}
 

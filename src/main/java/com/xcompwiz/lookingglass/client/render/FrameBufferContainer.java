@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentMap;
 
-import net.minecraftforge.client.MinecraftForgeClient;
-
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -13,6 +11,8 @@ import org.lwjgl.opengl.GL14;
 import com.google.common.collect.MapMaker;
 import com.xcompwiz.lookingglass.client.proxyworld.WorldView;
 import com.xcompwiz.lookingglass.log.LoggerUtils;
+
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class FrameBufferContainer {
 	/**

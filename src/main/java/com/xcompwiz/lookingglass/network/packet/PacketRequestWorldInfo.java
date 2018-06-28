@@ -1,23 +1,23 @@
 package com.xcompwiz.lookingglass.network.packet;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.common.DimensionManager;
-
 import com.xcompwiz.lookingglass.api.event.ClientWorldInfoEvent;
 import com.xcompwiz.lookingglass.network.LookingGlassPacketManager;
 import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PacketRequestWorldInfo extends PacketHandlerBase {
 	@SideOnly(Side.CLIENT)
 	public static FMLProxyPacket createPacket(int xPos, int yPos, int zPos, int dim) {
 		// This line may look like black magic (and, well, it is), but it's actually just returning a class reference for this class. Copy-paste safe.
-		ByteBuf data = PacketHandlerBase.createDataBuffer((Class<? extends PacketHandlerBase>) new Object() {}.getClass().getEnclosingClass());
+		PacketBuffer data = PacketHandlerBase.createDataBuffer((Class<? extends PacketHandlerBase>) new Object() {}.getClass().getEnclosingClass());
 
 		data.writeInt(dim);
 

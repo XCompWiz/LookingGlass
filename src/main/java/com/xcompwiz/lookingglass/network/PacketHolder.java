@@ -2,7 +2,7 @@ package com.xcompwiz.lookingglass.network;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 /**
  * @author Ken Butler/shadowking97

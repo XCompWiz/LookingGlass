@@ -1,14 +1,14 @@
 package com.xcompwiz.lookingglass.client.render;
 
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
 
 import com.xcompwiz.lookingglass.api.view.IWorldView;
 import com.xcompwiz.lookingglass.entity.EntityPortal;
+
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
 
 public class RenderPortal extends Render {
 

@@ -3,6 +3,11 @@ package com.xcompwiz.lookingglass.render;
 import java.io.PrintStream;
 import java.util.Collection;
 
+import com.xcompwiz.lookingglass.client.proxyworld.ProxyWorldManager;
+import com.xcompwiz.lookingglass.client.proxyworld.WorldView;
+import com.xcompwiz.lookingglass.client.render.RenderUtils;
+import com.xcompwiz.lookingglass.log.LoggerUtils;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -11,12 +16,7 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
-
-import com.xcompwiz.lookingglass.client.proxyworld.ProxyWorldManager;
-import com.xcompwiz.lookingglass.client.proxyworld.WorldView;
-import com.xcompwiz.lookingglass.client.render.RenderUtils;
-import com.xcompwiz.lookingglass.log.LoggerUtils;
+import net.minecraft.util.math.MathHelper;
 
 public class WorldViewRenderManager {
 	public static void onRenderTick(PrintStream printstream) {
@@ -55,7 +55,7 @@ public class WorldViewRenderManager {
 
 					try {
 						mc.renderGlobal.updateClouds();
-						mc.theWorld.doVoidFogParticles(MathHelper.floor_double(activeview.camera.posX), MathHelper.floor_double(activeview.camera.posY), MathHelper.floor_double(activeview.camera.posZ));
+						mc.theWorld.doVoidFogParticles(MathHelper.floor_double(activeview.camera.getX()), MathHelper.floor_double(activeview.camera.getY()), MathHelper.floor_double(activeview.camera.getZ()));
 						mc.effectRenderer.updateEffects();
 					} catch (Exception e) {
 						LoggerUtils.error("Client Proxy Dim had error while updating render elements: %s", e.getLocalizedMessage());

@@ -1,25 +1,24 @@
 package com.xcompwiz.lookingglass.client.proxyworld;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
-
 import com.xcompwiz.lookingglass.api.animator.ICameraAnimator;
 import com.xcompwiz.lookingglass.api.view.IViewCamera;
 import com.xcompwiz.lookingglass.api.view.IWorldView;
 import com.xcompwiz.lookingglass.client.render.FrameBufferContainer;
 import com.xcompwiz.lookingglass.entity.EntityCamera;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class WorldView implements IWorldView {
 	private WorldClient				worldObj;
-	public final ChunkCoordinates	coords;
+	public final BlockPos	coords;
 	public final EntityCamera		camera;
 	public final IViewCamera		camerawrapper;
 
@@ -36,7 +35,7 @@ public class WorldView implements IWorldView {
 
 	private FrameBufferContainer	fbo;
 
-	public WorldView(WorldClient worldObj, ChunkCoordinates coords, int width, int height) {
+	public WorldView(WorldClient worldObj, BlockPos coords, int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.worldObj = worldObj;
@@ -107,12 +106,12 @@ public class WorldView implements IWorldView {
 
 	public void onChunkReceived(int cx, int cz) {
 		this.hasChunks = true;
-		int cam_cx = MathHelper.floor_double(this.camera.posX) >> 4;
-		int cam_cz = MathHelper.floor_double(this.camera.posZ) >> 4;
+		int cam_cx = MathHelper.floor_double(this.camera.getX()) >> 4;
+		int cam_cz = MathHelper.floor_double(this.camera.getZ()) >> 4;
 		if (cam_cx >= cx - 1 && cam_cx <= cx + 1 && cam_cz > cz - 1 && cam_cz < cz + 1) this.camera.refreshAnimator();
 	}
 
-	public void updateWorldSpawn(ChunkCoordinates cc) {
+	public void updateWorldSpawn(BlockPos cc) {
 		this.camera.updateWorldSpawn(cc);
 	}
 

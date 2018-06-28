@@ -1,5 +1,7 @@
 package com.xcompwiz.lookingglass.entity;
 
+import com.xcompwiz.lookingglass.api.animator.ICameraAnimator;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -12,11 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import com.xcompwiz.lookingglass.api.animator.ICameraAnimator;
 
 /**
  * Our camera entity. This is made a player so that we can replace the player client-side when doing rendering.
@@ -25,21 +25,21 @@ import com.xcompwiz.lookingglass.api.animator.ICameraAnimator;
 public class EntityCamera extends EntityClientPlayerMP {
 
 	private ICameraAnimator		animator;
-	private ChunkCoordinates	target;
+	private BlockPos	target;
 	private boolean				defaultSpawn	= false;
 
 	private float				fovmultiplier	= 1;
 
-	public EntityCamera(World worldObj, ChunkCoordinates spawn) {
+	public EntityCamera(World worldObj, BlockPos spawn) {
 		super(Minecraft.getMinecraft(), worldObj, Minecraft.getMinecraft().getSession(), null, null);
 		this.target = spawn;
 		if (target == null) {
 			defaultSpawn = true;
-			ChunkCoordinates cc = worldObj.provider.getSpawnPoint();
+			BlockPos cc = worldObj.provider.getSpawnPoint();
 			int y = updateTargetPosition(cc);
-			target = new ChunkCoordinates(cc.posX, y, cc.posZ);
+			target = new BlockPos(cc.getX(), y, cc.getZ());
 		}
-		this.setPositionAndUpdate(target.posX, target.posY, target.posZ);
+		this.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
 	}
 
 	public void setAnimator(ICameraAnimator animator) {
@@ -54,34 +54,34 @@ public class EntityCamera extends EntityClientPlayerMP {
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D);
 	}
 
-	public void updateWorldSpawn(ChunkCoordinates cc) {
+	public void updateWorldSpawn(BlockPos cc) {
 		if (defaultSpawn) {
 			int y = updateTargetPosition(cc);
-			target = new ChunkCoordinates(cc.posX, y, cc.posZ);
-			this.setPositionAndUpdate(target.posX, target.posY, target.posZ);
+			target = new BlockPos(cc.getX(), y, cc.getZ());
+			this.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
 			if (animator != null) animator.setTarget(cc);
 			this.refreshAnimator();
 		}
 	}
 
-	private int updateTargetPosition(ChunkCoordinates target) {
-		int x = target.posX;
-		int y = target.posY;
-		int z = target.posZ;
+	private int updateTargetPosition(BlockPos target) {
+		int x = target.getX();
+		int y = target.getY();
+		int z = target.getZ();
 		if (!this.worldObj.getChunkFromBlockCoords(x, z).isEmpty()) {
 			if (this.worldObj.getBlock(x, y, z).getBlocksMovement(this.worldObj, x, y, z)) {
 				while (y > 0 && this.worldObj.getBlock(x, --y, z).getBlocksMovement(this.worldObj, x, y, z))
 					;
-				if (y == 0) y = target.posY;
+				if (y == 0) y = target.getY();
 				else ++y;
 			} else {
 				while (y < 256 && !this.worldObj.getBlock(x, ++y, z).getBlocksMovement(this.worldObj, x, y, z))
 					;
-				if (y == 256) y = target.posY;
+				if (y == 256) y = target.getY();
 			}
 			return y;
 		}
-		return target.posY;
+		return target.getY();
 	}
 
 	public void refreshAnimator() {

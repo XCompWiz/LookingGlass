@@ -1,11 +1,9 @@
 package com.xcompwiz.lookingglass.api.hook;
 
-import net.minecraft.util.ChunkCoordinates;
-
 import com.xcompwiz.lookingglass.api.view.IWorldView;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Available via "view-2" from the API provider
@@ -22,7 +20,7 @@ public interface WorldViewAPI2 {
 	 * @return A IWorldView object for your use or null if something goes wrong.
 	 */
 	@SideOnly(Side.CLIENT)
-	IWorldView createWorldView(Integer dimid, ChunkCoordinates coords, int width, int height);
+	IWorldView createWorldView(Integer dimid, BlockPos coords, int width, int height);
 
 	/**
 	 * This function is available should you wish to explicitly have the world view clean up its framebuffer. You should not use a view after calling this on

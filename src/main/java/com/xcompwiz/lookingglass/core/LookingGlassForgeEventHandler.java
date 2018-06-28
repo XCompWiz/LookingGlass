@@ -2,16 +2,15 @@ package com.xcompwiz.lookingglass.core;
 
 import java.util.List;
 
+import com.xcompwiz.lookingglass.entity.EntityPortal;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
-
-import com.xcompwiz.lookingglass.entity.EntityPortal;
-
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LookingGlassForgeEventHandler {
 

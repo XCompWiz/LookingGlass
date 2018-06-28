@@ -7,7 +7,7 @@ import com.xcompwiz.lookingglass.apiimpl.InternalAPI;
 import com.xcompwiz.lookingglass.imc.IMCHandler.IMCProcessor;
 import com.xcompwiz.lookingglass.log.LoggerUtils;
 
-import cpw.mods.fml.common.event.FMLInterModComms.IMCMessage;
+import net.minecraftforge.fml.common.event.FMLInterModComms.IMCMessage;
 
 public class IMCAPIRegister implements IMCProcessor {
 

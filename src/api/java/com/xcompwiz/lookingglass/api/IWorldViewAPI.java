@@ -1,11 +1,9 @@
 package com.xcompwiz.lookingglass.api;
 
-import net.minecraft.util.ChunkCoordinates;
-
 import com.xcompwiz.lookingglass.api.view.IWorldView;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @deprecated This interface will be removed in a future version. You should switch to the IWorldViewAPI2.
@@ -23,5 +21,5 @@ public interface IWorldViewAPI {
 	 * @return A IWorldView object for your use or null if something goes wrong.
 	 */
 	@SideOnly(Side.CLIENT)
-	IWorldView createWorldView(Integer dimid, ChunkCoordinates coords, int width, int height);
+	IWorldView createWorldView(Integer dimid, BlockPos coords, int width, int height);
 }

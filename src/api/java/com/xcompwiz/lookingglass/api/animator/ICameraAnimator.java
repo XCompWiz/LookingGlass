@@ -1,6 +1,6 @@
 package com.xcompwiz.lookingglass.api.animator;
 
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 
 public interface ICameraAnimator {
 
@@ -8,7 +8,7 @@ public interface ICameraAnimator {
 	 * Sets the look-at target (in block coordinates)
 	 * @param target The block target
 	 */
-	void setTarget(ChunkCoordinates target);
+	void setTarget(BlockPos target);
 
 	/**
 	 * Allows the animator to refresh/reboot its settings

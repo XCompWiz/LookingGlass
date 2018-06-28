@@ -3,11 +3,10 @@ package com.xcompwiz.lookingglass.network;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
-
 import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 /**
  * This class is a variant o nthe vanilla server packet dispatcher. We use it so that we can send data to cleitns in a limited (throttled) manner. This allows

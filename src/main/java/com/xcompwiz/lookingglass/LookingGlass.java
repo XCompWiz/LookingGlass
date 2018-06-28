@@ -2,16 +2,12 @@ package com.xcompwiz.lookingglass;
 
 import java.io.File;
 
-import net.minecraft.command.ServerCommandManager;
-import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-
 import com.google.common.collect.ImmutableList;
 import com.xcompwiz.lookingglass.apiimpl.APIProviderImpl;
 import com.xcompwiz.lookingglass.command.CommandCreateView;
 import com.xcompwiz.lookingglass.core.CommonProxy;
 import com.xcompwiz.lookingglass.core.LookingGlassForgeEventHandler;
+import com.xcompwiz.lookingglass.entity.EntityPortal;
 import com.xcompwiz.lookingglass.imc.IMCHandler;
 import com.xcompwiz.lookingglass.network.LookingGlassPacketManager;
 import com.xcompwiz.lookingglass.network.ServerPacketDispatcher;
@@ -26,20 +22,24 @@ import com.xcompwiz.lookingglass.network.packet.PacketWorldInfo;
 import com.xcompwiz.lookingglass.proxyworld.LookingGlassEventHandler;
 import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLInterModComms.IMCEvent;
-import cpw.mods.fml.common.event.FMLInterModComms.IMCMessage;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.EntityRegistry;
+import net.minecraft.command.ServerCommandManager;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms.IMCMessage;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 @Mod(modid = LookingGlass.MODID, name = "LookingGlass", version = LookingGlass.VERSION)
 public class LookingGlass {

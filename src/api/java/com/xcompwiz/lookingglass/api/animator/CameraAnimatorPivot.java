@@ -1,10 +1,10 @@
 package com.xcompwiz.lookingglass.api.animator;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.world.IBlockAccess;
-
 import com.xcompwiz.lookingglass.api.view.IViewCamera;
+
+import net.minecraft.block.Block;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 
 /**
  * This is a standard sample implementation of a camera animator. It simply uses the target location as a LookAt target and does a fly pivot around it. It can
@@ -18,7 +18,7 @@ public class CameraAnimatorPivot implements ICameraAnimator {
 	private static final int[]		defaults	= { 1, 3 };
 
 	private final IViewCamera		camera;
-	private ChunkCoordinates		target;
+	private BlockPos		target;
 
 	private boolean					positionSet	= false;
 
@@ -35,7 +35,7 @@ public class CameraAnimatorPivot implements ICameraAnimator {
 	}
 
 	@Override
-	public void setTarget(ChunkCoordinates target) {
+	public void setTarget(BlockPos target) {
 		this.target = target;
 		positionSet = false;
 	}
@@ -155,9 +155,9 @@ public class CameraAnimatorPivot implements ICameraAnimator {
 	}
 
 	private void checkCameraY() {
-		int x = target.posX;
-		int y = target.posY;
-		int z = target.posZ;
+		int x = target.getX();
+		int y = target.getY();
+		int z = target.getZ();
 		int yBackup = y;
 		if (camera.chunkExists(x, z)) {
 			if (camera.getBlockData().getBlock(x, y, z).getBlocksMovement(camera.getBlockData(), x, y, z)) {

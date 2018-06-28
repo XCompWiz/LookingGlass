@@ -1,10 +1,10 @@
 package com.xcompwiz.lookingglass.proxyworld;
 
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 
 public class SubChunkUtils {
-	public static final boolean withinDistance(ChunkCoordinates c1, int x, int y, int z, int distance) {
-		return distance * distance >= c1.getDistanceSquared(x, y, z);
+	public static final boolean withinDistance(BlockPos c1, int x, int y, int z, int distance) {
+		return distance * distance >= c1.distanceSq(x, y, z);
 	}
 
 	public static final boolean withinDistance(int x, int y, int z, int x2, int y2, int z2, int distance) {
@@ -14,8 +14,8 @@ public class SubChunkUtils {
 		return distance * distance >= x3 * x3 + y3 * y3 + z3 * z3;
 	}
 
-	public static final boolean withinRange(ChunkCoordinates c1, int x, int y, int z, int d1, int d2) {
-		float cDistance = c1.getDistanceSquared(x, y, z);
+	public static final boolean withinRange(BlockPos c1, int x, int y, int z, int d1, int d2) {
+		double cDistance = c1.distanceSq(x, y, z);
 		return d2 * d2 >= cDistance && d1 * d1 <= cDistance;
 	}
 

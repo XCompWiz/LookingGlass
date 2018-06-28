@@ -1,27 +1,26 @@
 package com.xcompwiz.lookingglass.network.packet;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.concurrent.Semaphore;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
-
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.play.server.S21PacketChunkData;
-import net.minecraft.network.play.server.S21PacketChunkData.Extracted;
-import net.minecraft.world.WorldProviderSurface;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.NibbleArray;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 import com.xcompwiz.lookingglass.client.proxyworld.ProxyWorldManager;
 import com.xcompwiz.lookingglass.client.proxyworld.WorldView;
 import com.xcompwiz.lookingglass.log.LoggerUtils;
 import com.xcompwiz.lookingglass.network.LookingGlassPacketManager;
 
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.play.server.S21PacketChunkData;
+import net.minecraft.network.play.server.S21PacketChunkData.Extracted;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldProviderSurface;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.NibbleArray;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 /**
  * Based on code from Ken Butler/shadowking97
@@ -46,8 +45,8 @@ public class PacketChunkInfo extends PacketHandlerBase {
 	}
 
 	public static FMLProxyPacket createPacket(Chunk chunk, boolean includeinit, int subid, int dim) {
-		int xPos = chunk.xPosition;
-		int zPos = chunk.zPosition;
+		int xPos = chunk.x;
+		int zPos = chunk.z;
 		Extracted extracted = getMapChunkData(chunk, includeinit, subid);
 		int yMSBPos = extracted.field_150281_c;
 		int yPos = extracted.field_150280_b;
@@ -137,15 +136,16 @@ public class PacketChunkInfo extends PacketHandlerBase {
 		int x = (cx << 4);
 		int z = (cz << 4);
 		for (int y = 0; y < worldObj.getActualHeight(); y += 16) {
-			if (c.getAreLevelsEmpty(y, y)) continue;
+			if (c.isEmptyBetween(y, y)) continue;
 			for (int x2 = 0; x2 < 16; ++x2) {
 				for (int z2 = 0; z2 < 16; ++z2) {
 					for (int y2 = 0; y2 < 16; ++y2) {
 						int lx = x + x2;
 						int ly = y + y2;
 						int lz = z + z2;
-						if (worldObj.getBlock(lx, ly, lz).hasTileEntity(worldObj.getBlockMetadata(lx, ly, lz))) {
-							LookingGlassPacketManager.bus.sendToServer(PacketRequestTE.createPacket(lx, ly, lz, worldObj.provider.dimensionId));
+						BlockPos pos = new BlockPos(lx, ly, lz);
+						if (worldObj.getTileEntity(pos) != null) {
+							LookingGlassPacketManager.bus.sendToServer(PacketRequestTE.createPacket(lx, ly, lz, worldObj.provider.getDimension()));
 						}
 					}
 				}
@@ -212,25 +212,25 @@ public class PacketChunkInfo extends PacketHandlerBase {
 		for (l = 0; l < aextendedblockstorage.length; ++l) {
 			if (aextendedblockstorage[l] != null && (!includeinit || !aextendedblockstorage[l].isEmpty()) && (subid & 1 << l) != 0) {
 				nibblearray = aextendedblockstorage[l].getMetadataArray();
-				System.arraycopy(nibblearray.data, 0, abyte, j, nibblearray.data.length);
-				j += nibblearray.data.length;
+				System.arraycopy(nibblearray.getData(), 0, abyte, j, nibblearray.getData().length);
+				j += nibblearray.getData().length;
 			}
 		}
 
 		for (l = 0; l < aextendedblockstorage.length; ++l) {
 			if (aextendedblockstorage[l] != null && (!includeinit || !aextendedblockstorage[l].isEmpty()) && (subid & 1 << l) != 0) {
 				nibblearray = aextendedblockstorage[l].getBlocklightArray();
-				System.arraycopy(nibblearray.data, 0, abyte, j, nibblearray.data.length);
-				j += nibblearray.data.length;
+				System.arraycopy(nibblearray.getData(), 0, abyte, j, nibblearray.getData().length);
+				j += nibblearray.getData().length;
 			}
 		}
 
-		if (!chunk.worldObj.provider.hasNoSky) {
+		if (!chunk.getWorld().provider.hasSkyLight()) {
 			for (l = 0; l < aextendedblockstorage.length; ++l) {
 				if (aextendedblockstorage[l] != null && (!includeinit || !aextendedblockstorage[l].isEmpty()) && (subid & 1 << l) != 0) {
-					nibblearray = aextendedblockstorage[l].getSkylightArray();
-					System.arraycopy(nibblearray.data, 0, abyte, j, nibblearray.data.length);
-					j += nibblearray.data.length;
+					nibblearray = aextendedblockstorage[l].getSkyLight();
+					System.arraycopy(nibblearray.getData(), 0, abyte, j, nibblearray.getData().length);
+					j += nibblearray.getData().length;
 				}
 			}
 		}
@@ -239,8 +239,8 @@ public class PacketChunkInfo extends PacketHandlerBase {
 			for (l = 0; l < aextendedblockstorage.length; ++l) {
 				if (aextendedblockstorage[l] != null && (!includeinit || !aextendedblockstorage[l].isEmpty()) && aextendedblockstorage[l].getBlockMSBArray() != null && (subid & 1 << l) != 0) {
 					nibblearray = aextendedblockstorage[l].getBlockMSBArray();
-					System.arraycopy(nibblearray.data, 0, abyte, j, nibblearray.data.length);
-					j += nibblearray.data.length;
+					System.arraycopy(nibblearray.getData(), 0, abyte, j, nibblearray.getData().length);
+					j += nibblearray.getData().length;
 				}
 			}
 		}

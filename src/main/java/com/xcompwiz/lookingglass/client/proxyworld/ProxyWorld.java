@@ -4,8 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EntityFireworkStarterFX;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.GameType;
 import net.minecraft.world.WorldSettings;
-import net.minecraft.world.WorldSettings.GameType;
 import net.minecraft.world.WorldType;
 
 // FIXME: AAHH! Fake world classes! EXTERMINATE!

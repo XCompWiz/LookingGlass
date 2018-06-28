@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class CommandBaseAdv extends CommandBase {
@@ -43,8 +43,8 @@ public abstract class CommandBaseAdv extends CommandBase {
 	public static TileEntity getCommandSenderAsTileEntity(ICommandSender sender) {
 		try {
 			World world = sender.getEntityWorld();
-			ChunkCoordinates coords = sender.getPlayerCoordinates();
-			return world.getTileEntity(coords.posX, coords.posY, coords.posZ);
+			BlockPos coords = sender.getPlayerCoordinates();
+			return world.getTileEntity(coords.getX(), coords.getY(), coords.getZ());
 		} catch (Exception e) {
 			throw new CommandException("Could not get tile entity");
 		}
