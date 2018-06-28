@@ -10,6 +10,8 @@ __*
 /bin
 /build
 /gradle
+/libs
+/media
 /run
 
 /.classpath
@@ -24,3 +26,10 @@ __*
 /todo.txt
 /changes.txt
 /changelog.txt
+passwords.gradle
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
