@@ -73,7 +73,7 @@ public class LookingGlass {
 		// Here we use the recommended config file to establish a good place to put a log file for any proxy world error logs.  Used primarily to log the full errors when ticking or rendering proxy worlds. 
 		File configroot = event.getSuggestedConfigurationFile().getParentFile();
 		// Main tick handler. Handles FML events.
-		FMLCommonHandler.instance().bus().register(new LookingGlassEventHandler(new File(configroot.getParentFile(), "logs/proxyworlds.log")));
+		MinecraftForge.EVENT_BUS.register(new LookingGlassEventHandler(new File(configroot.getParentFile(), "logs/proxyworlds.log")));
 		// Forge event handler
 		MinecraftForge.EVENT_BUS.register(new LookingGlassForgeEventHandler());
 
