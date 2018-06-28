@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderPortal extends Render<EntityPortal> {
 
@@ -72,4 +73,11 @@ public class RenderPortal extends Render<EntityPortal> {
 		GlStateManager.enableAlpha();
 	}
 
+
+	public static class Factory implements IRenderFactory<EntityPortal> {
+		@Override
+		public Render<EntityPortal> createRenderFor(RenderManager manager) {
+			return new RenderPortal(manager);
+		}
+	}
 }
