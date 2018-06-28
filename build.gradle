@@ -46,12 +46,15 @@ buildscript {
 	dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
 		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.0.8'
+		classpath "org._10ne.gradle:rest-gradle-plugin:0.4.2"
 	}
 }
 
 apply plugin: 'maven'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.tenne.rest'
+
 repositories {
 	mavenLocal()
 	mavenCentral()
@@ -319,6 +322,7 @@ types.eachWithIndex { type, index ->
 		srcJar.version = "${project.minecraft.version}-${project.version}"
 		project.tasks.sourceMainJava.replace "@VERSION@", project.version
 		uploadArchives.repositories.mavenDeployer.pom.version = project.version
+		discord.requestBody = [content: "${project.nameCased} " + "${-> project.version}" + " is uploading to CurseForge\n```" + project.publishChangelog.text + " ```"]
 	}
 
 	task("deploy-$type") {
@@ -360,7 +364,15 @@ curseforge {
 	}
 }
 
+task discord(type: org._10ne.gradle.rest.RestTask) {
+	httpMethod = 'post'
+	uri = pass.discordWebhook
+	requestBody = [content: "${project.nameCased} " + "${-> project.version}" + " is uploading to CurseForge\n```" + project.publishChangelog.text + " ```"]
+	contentType = groovyx.net.http.ContentType.JSON
 }
+
+project.tasks.discord.mustRunAfter markChangelog
+project.tasks.curseforge.dependsOn discord
 
 // deployment stuff
 
