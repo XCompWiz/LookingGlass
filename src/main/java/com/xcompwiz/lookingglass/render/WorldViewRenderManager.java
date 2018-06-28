@@ -40,7 +40,7 @@ public class WorldViewRenderManager {
 			if (proxyworld == null) continue;
 			mc.theWorld = proxyworld;
 			RenderManager.instance.set(mc.theWorld);
-			for (WorldView activeview : ProxyWorldManager.getWorldViews(proxyworld.provider.dimensionId)) {
+			for (WorldView activeview : ProxyWorldManager.getWorldViews(proxyworld.provider.getDimension())) {
 				if (activeview.hasChunks() && activeview.markClean()) {
 					activeview.startRender(renderT);
 

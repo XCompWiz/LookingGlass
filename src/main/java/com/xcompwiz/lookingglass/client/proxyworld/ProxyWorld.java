@@ -21,7 +21,7 @@ public class ProxyWorld extends WorldClient {
 	// TODO: In order to eliminate this class we need to create a redirection wrapper class for the mc.effectRenderer which does this for all views.
 	@Override
 	public void makeFireworks(double par1, double par3, double par5, double par7, double par9, double par11, NBTTagCompound par13NBTTagCompound) {
-		for (WorldView activeview : ProxyWorldManager.getWorldViews(this.provider.dimensionId)) {
+		for (WorldView activeview : ProxyWorldManager.getWorldViews(this.provider.getDimension())) {
 			activeview.getEffectRenderer().addEffect(new EntityFireworkStarterFX(this, par1, par3, par5, par7, par9, par11, activeview.getEffectRenderer(), par13NBTTagCompound));
 		}
 	}

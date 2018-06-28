@@ -38,7 +38,7 @@ public class ProxyWorldManager {
 	public static void handleWorldChange(WorldClient world) {
 		if (ModConfigs.disabled) return;
 		if (world == null) return;
-		int dimid = world.provider.dimensionId;
+		int dimid = world.provider.getDimension();
 		if (!proxyworlds.containsKey(dimid)) return; //BEST CASE! We don't have to do anything!
 		proxyworlds.put(dimid, world);
 		Collection<WorldView> worldviews = worldviewsets.get(dimid);
@@ -68,7 +68,7 @@ public class ProxyWorldManager {
 			// We really don't want to be doing this during a render cycle
 			if (Minecraft.getMinecraft().thePlayer instanceof EntityCamera) return null; //TODO: This check probably needs to be altered
 			WorldClient theWorld = Minecraft.getMinecraft().theWorld;
-			if (theWorld != null && theWorld.provider.dimensionId == dimid) proxyworld = theWorld;
+			if (theWorld != null && theWorld.provider.getDimension() == dimid) proxyworld = theWorld;
 			if (proxyworld == null) proxyworld = new ProxyWorld(dimid);
 			proxyworlds.put(dimid, proxyworld);
 			worldviewsets.put(dimid, Collections.newSetFromMap(new WeakHashMap<WorldView, Boolean>()));
@@ -135,7 +135,7 @@ public class ProxyWorldManager {
 	 * @param view The view to kill
 	 */
 	public static void destroyWorldView(WorldView view) {
-		Collection<WorldView> set = worldviewsets.get(view.getWorldObj().provider.dimensionId);
+		Collection<WorldView> set = worldviewsets.get(view.getWorldObj().provider.getDimension());
 		if (set != null) set.remove(view);
 		//TODO: closeViewConnection(worldviewID);
 		view.cleanup();
