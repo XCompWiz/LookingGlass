@@ -43,7 +43,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 
 @Mod(modid = LookingGlass.MODID, name = "LookingGlass", version = LookingGlass.VERSION)
 public class LookingGlass {
-	public static final String	MODID	= "LookingGlass";
+	public static final String	MODID	= "lookingglass";
 	public static final String	VERSION	= "@VERSION@";
 
 	@Instance(LookingGlass.MODID)
