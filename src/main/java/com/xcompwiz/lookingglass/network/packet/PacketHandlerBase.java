@@ -1,7 +1,5 @@
 package com.xcompwiz.lookingglass.network.packet;
 
-import java.nio.charset.StandardCharsets;
-
 import com.xcompwiz.lookingglass.network.LookingGlassPacketManager;
 
 import io.netty.buffer.ByteBuf;

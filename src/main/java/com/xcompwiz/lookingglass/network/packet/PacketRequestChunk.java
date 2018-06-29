@@ -6,7 +6,6 @@ import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
@@ -34,7 +33,7 @@ public class PacketRequestChunk extends PacketHandlerBase {
 		int zPos = data.readInt();
 
 		if (!DimensionManager.isDimensionRegistered(dim)) return;
-		WorldServer world = MinecraftServer.getServer().worldServerForDimension(dim);
+		WorldServer world = player.getServer().getWorld(dim);
 		if (world == null) return;
 		Chunk chunk = world.getChunkFromChunkCoords(xPos, zPos);
 		if (!chunk.isLoaded()) chunk = world.getChunkProvider().loadChunk(xPos, zPos);

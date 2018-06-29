@@ -13,8 +13,11 @@ import com.xcompwiz.lookingglass.network.LookingGlassPacketManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.S21PacketChunkData;
 import net.minecraft.network.play.server.S21PacketChunkData.Extracted;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldProviderSurface;
 import net.minecraft.world.chunk.Chunk;
@@ -58,7 +61,7 @@ public class PacketChunkInfo extends PacketHandlerBase {
 		deflateGate.release();
 
 		// This line may look like black magic (and, well, it is), but it's actually just returning a class reference for this class. Copy-paste safe.
-		ByteBuf data = PacketHandlerBase.createDataBuffer((Class<? extends PacketHandlerBase>) new Object() {}.getClass().getEnclosingClass());
+		PacketBuffer data = PacketHandlerBase.createDataBuffer((Class<? extends PacketHandlerBase>) new Object() {}.getClass().getEnclosingClass());
 
 		data.writeInt(dim);
 		data.writeInt(xPos);
@@ -97,26 +100,41 @@ public class PacketChunkInfo extends PacketHandlerBase {
 	public void handle(EntityPlayer player, byte[] chunkData, int dim, int xPos, int zPos, boolean reqinit, short yPos, short yMSBPos) {
 		WorldClient proxyworld = ProxyWorldManager.getProxyworld(dim);
 		if (proxyworld == null) return;
-		if (proxyworld.provider.dimensionId != dim) return;
+		if (proxyworld.provider.getDimension() != dim) return;
 
-		//TODO: Test to see if this first part is even necessary
-		Chunk chunk = proxyworld.getChunkProvider().provideChunk(xPos, zPos);
-		if (reqinit && (chunk == null || chunk.isEmpty())) {
-			if (yPos == 0) {
-				proxyworld.doPreChunk(xPos, zPos, false);
-				return;
-			}
-			proxyworld.doPreChunk(xPos, zPos, true);
-		}
+        if (packetIn.isFullChunk())
+        {
+        	proxyworld.doPreChunk(xPos, zPos, true);
+        }
+
 		// End possible removal section
 		proxyworld.invalidateBlockReceiveRegion(xPos << 4, 0, zPos << 4, (xPos << 4) + 15, 256, (zPos << 4) + 15);
 		chunk = proxyworld.getChunkFromChunkCoords(xPos, zPos);
+        chunk.read(packetIn.getReadBuffer(), packetIn.getExtractedSize(), packetIn.isFullChunk());
+
+        if (!packetIn.isFullChunk() || this.world.provider.shouldClientCheckLighting())
+        {
+            chunk.resetRelightChecks();
+        }
+
+
+        for (NBTTagCompound nbttagcompound : packetIn.getTileEntityTags())
+        {
+            BlockPos blockpos = new BlockPos(nbttagcompound.getInteger("x"), nbttagcompound.getInteger("y"), nbttagcompound.getInteger("z"));
+            TileEntity tileentity = this.world.getTileEntity(blockpos);
+
+            if (tileentity != null)
+            {
+                tileentity.handleUpdateTag(nbttagcompound);
+            }
+        }
+
 		if (reqinit && (chunk == null || chunk.isEmpty())) {
 			proxyworld.doPreChunk(xPos, zPos, true);
 			chunk = proxyworld.getChunkFromChunkCoords(xPos, zPos);
 		}
 		if (chunk != null) {
-			chunk.fillChunk(chunkData, yPos, yMSBPos, reqinit);
+			chunk.read(chunkData, yPos, yMSBPos, reqinit);
 			receivedChunk(proxyworld, xPos, zPos);
 			if (!reqinit || !(proxyworld.provider instanceof WorldProviderSurface)) {
 				chunk.resetRelightChecks();
@@ -129,7 +147,7 @@ public class PacketChunkInfo extends PacketHandlerBase {
 		Chunk c = worldObj.getChunkFromChunkCoords(cx, cz);
 		if (c == null || c.isEmpty()) return;
 
-		for (WorldView activeview : ProxyWorldManager.getWorldViews(worldObj.provider.dimensionId)) {
+		for (WorldView activeview : ProxyWorldManager.getWorldViews(worldObj.provider.getDimension())) {
 			activeview.onChunkReceived(cx, cz);
 		}
 

@@ -20,8 +20,8 @@ import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
  */
 public class PacketWorldInfo extends PacketHandlerBase {
 
-	public static FMLProxyPacket createPacket(int dimension) {
-		WorldServer world = MinecraftServer.getServer().worldServerForDimension(dimension);
+	public static FMLProxyPacket createPacket(MinecraftServer server, int dimension) {
+		WorldServer world = server.getWorld(dimension);
 		if (world == null) {
 			LoggerUtils.warn("Server-side world for dimension %i is null!", dimension);
 			return null;

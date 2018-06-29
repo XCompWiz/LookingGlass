@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
@@ -54,7 +53,7 @@ public class PacketCreateView extends PacketHandlerBase {
 		byte renderDistance = data.readByte();
 
 		if (!DimensionManager.isDimensionRegistered(dim)) return;
-		WorldServer world = MinecraftServer.getServer().worldServerForDimension(dim);
+		WorldServer world = player.getServer().getWorld(dim);
 		if (world == null) return;
 		int x;
 		int y;
@@ -75,6 +74,6 @@ public class PacketCreateView extends PacketHandlerBase {
 		//Register ChunkFinder, and support change of finder location.
 		//TODO: This is a repeat of the handling of PacketRequestWorldInfo
 		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new ClientWorldInfoEvent(dim, (EntityPlayerMP) player));
-		LookingGlassPacketManager.bus.sendTo(PacketWorldInfo.createPacket(dim), (EntityPlayerMP) player);
+		LookingGlassPacketManager.bus.sendTo(PacketWorldInfo.createPacket(player.getServer(), dim), (EntityPlayerMP) player);
 	}
 }

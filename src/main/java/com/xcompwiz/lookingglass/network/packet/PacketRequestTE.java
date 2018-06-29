@@ -7,7 +7,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
@@ -36,7 +35,7 @@ public class PacketRequestTE extends PacketHandlerBase {
 		int zPos = data.readInt();
 
 		if (!DimensionManager.isDimensionRegistered(dim)) return;
-		WorldServer world = MinecraftServer.getServer().worldServerForDimension(dim);
+		WorldServer world = player.getServer().getWorld(dim);
 		if (world == null) return;
 		TileEntity tile = world.getTileEntity(new BlockPos(xPos, yPos, zPos));
 		if (tile != null) {

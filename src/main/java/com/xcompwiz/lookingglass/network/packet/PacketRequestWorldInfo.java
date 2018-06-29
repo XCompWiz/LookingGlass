@@ -31,6 +31,6 @@ public class PacketRequestWorldInfo extends PacketHandlerBase {
 
 		if (!DimensionManager.isDimensionRegistered(dim)) return;
 		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new ClientWorldInfoEvent(dim, (EntityPlayerMP) player));
-		LookingGlassPacketManager.bus.sendTo(PacketWorldInfo.createPacket(dim), (EntityPlayerMP) player);
+		LookingGlassPacketManager.bus.sendTo(PacketWorldInfo.createPacket(player.getServer(), dim), (EntityPlayerMP) player);
 	}
 }
