@@ -34,37 +34,60 @@ public class CommandCreateView extends CommandBaseAdv {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		int targetdim = 0;
 		Integer dim = null;
-		BlockPos coords = null;
+		double x = 0;
+		double y = 0;
+		double z = 0;
+		float yaw = 0;
+		boolean coordsSet = false;
 
-		//XXX: Set Coordinates of view location?
+		//TODO: Set Coordinates of view location?
 		if (args.length > 0) {
 			String sTarget = args[0];
 			targetdim = parseInt(sTarget);
 		} else {
 			throw new WrongUsageException("Could not parse command.");
 		}
+
+		Entity caller = null;
+		try {
+			caller = getCommandSenderAsPlayer(sender);
+		} catch (Exception e) {
+		}
+
 		if (args.length > 4) {
 			dim = parseInt(args[1]);
-			Entity caller = null;
-			try {
-				caller = getCommandSenderAsPlayer(sender);
-			} catch (Exception e) {
+			x = handleRelativeNumber(sender, (caller != null ? caller.posX : 0), args[2]);
+			y = handleRelativeNumber(sender, (caller != null ? caller.posY : 0), args[3], 0, 0);
+			z = handleRelativeNumber(sender, (caller != null ? caller.posZ : 0), args[4]);
+			coordsSet = true;
+			if (args.length > 5) {
+				yaw = (float) handleRelativeNumber(sender, (caller != null ? caller.posZ : 0), args[5]);
 			}
-			int x = (int) handleRelativeNumber(sender, (caller != null ? caller.posX : 0), args[2]);
-			int y = (int) handleRelativeNumber(sender, (caller != null ? caller.posY : 0), args[3], 0, 0);
-			int z = (int) handleRelativeNumber(sender, (caller != null ? caller.posZ : 0), args[4]);
-			coords = new BlockPos(x, y, z);
 		}
-		if (coords == null) {
+		if (!coordsSet) {
 			dim = getSenderDimension(sender);
-			coords = sender.getPosition();
+			if (caller == null)
+			{
+				BlockPos coords = sender.getPosition();
+				x = coords.getX();
+				y = coords.getY();
+				z = coords.getZ();
+			}
+			else
+			{
+				x = caller.posX;
+				y = caller.posY;
+				z = caller.posZ;
+			}
+			yaw = sender.getCommandSenderEntity().rotationYaw;
 		}
-		if (coords == null) throw new WrongUsageException("Location Required");
+		else
+			throw new WrongUsageException("Location Required");
 
 		WorldServer worldObj = DimensionManager.getWorld(dim);
 		if (worldObj == null) { throw new CommandException("The target world is not loaded"); }
 
-		EntityPortal portal = new EntityPortal(worldObj, targetdim, coords.getX(), coords.getY(), coords.getZ());
+		EntityPortal portal = new EntityPortal(worldObj, targetdim, x, y, z, yaw, 1000);
 		worldObj.spawnEntity(portal);
 
 		sendToAdmins(sender, "A window to dimension " + targetdim + " has been created.", new Object[0]);

@@ -22,22 +22,23 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EntityPortal extends Entity {
 	// We store the dimension ID we point at in the dataWatcher at this index.
     private static final DataParameter<Integer> targetID = EntityDataManager.<Integer>createKey(EntityPortal.class, DataSerializers.VARINT);
-
-	// How long the window has to live. Functions as a countdown timer.
-	private long				lifetime	= 1000L;
+	private static final DataParameter<Integer>	lifetimeID	= EntityDataManager.<Integer>createKey(EntityPortal.class, DataSerializers.VARINT);
 
 	@SideOnly(Side.CLIENT)
 	private IWorldView			activeview;
 
 	public EntityPortal(World world) {
 		super(world);
-		dataManager.register(targetID, 0);
+		dataManager.register(targetID, Integer.valueOf(0));
+		dataManager.register(lifetimeID, Integer.valueOf(0));
 	}
 
-	public EntityPortal(World world, int targetdim, int posX, int posY, int posZ) {
+	public EntityPortal(World world, int targetdim, double posX, double posY, double posZ, float yaw, int lifetime) {
 		this(world);
 		this.setTarget(targetdim);
 		this.setPosition(posX, posY, posZ);
+		this.setRotation(yaw, 0);
+		this.setLifetime(lifetime);
 	}
 
 	/** Puts the dim id target in the datawatcher. */
@@ -50,6 +51,14 @@ public class EntityPortal extends Entity {
 	/** Gets the target dimension id */
 	private int getTarget() {
 		return dataManager.get(targetID);
+	}
+
+	private void setLifetime(int lifetime) {
+		dataManager.set(lifetimeID, lifetime);
+	}
+
+	public int getLifetime() {
+		return dataManager.get(lifetimeID);
 	}
 
 	@Override
@@ -65,8 +74,8 @@ public class EntityPortal extends Entity {
 	@Override
 	public void onUpdate() {
 		// Countdown to die
-		--lifetime;
-		if (lifetime <= 0) {
+		setLifetime(getLifetime()-1);
+		if (getLifetime() <= 0) {
 			this.setDead();
 			return;
 		}
@@ -95,13 +104,13 @@ public class EntityPortal extends Entity {
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound nbt) {
 		setTarget(nbt.getInteger("Dimension"));
-		lifetime = nbt.getLong("lifetime");
+		setLifetime(nbt.getInteger("lifetime"));
 	}
 
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound nbt) {
 		nbt.setInteger("Dimension", getTarget());
-		nbt.setLong("lifetime", lifetime);
+		nbt.setInteger("lifetime", getLifetime());
 	}
 
 }
