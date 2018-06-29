@@ -4,7 +4,7 @@ import com.xcompwiz.lookingglass.api.animator.ICameraAnimator;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -22,7 +22,7 @@ import net.minecraft.world.World;
  * Our camera entity. This is made a player so that we can replace the player client-side when doing rendering.
  * At the bottom of the class we create a bunch of method stubs to override higher level logic, so that our "player" doesn't act like one.
  */
-public class EntityCamera extends EntityClientPlayerMP {
+public class EntityCamera extends EntityPlayerSP {
 
 	private ICameraAnimator		animator;
 	private BlockPos	target;
@@ -50,8 +50,8 @@ public class EntityCamera extends EntityClientPlayerMP {
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(1);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.0D);
+		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1);
+		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.0D);
 	}
 
 	public void updateWorldSpawn(BlockPos cc) {
