@@ -4,7 +4,6 @@ import com.xcompwiz.lookingglass.api.event.ClientWorldInfoEvent;
 import com.xcompwiz.lookingglass.network.LookingGlassPacketManager;
 import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
@@ -25,7 +24,7 @@ public class PacketRequestWorldInfo extends PacketHandlerBase {
 	}
 
 	@Override
-	public void handle(ByteBuf data, EntityPlayer player) {
+	public void handle(PacketBuffer data, EntityPlayer player) {
 		if (ModConfigs.disabled) return;
 		int dim = data.readInt();
 

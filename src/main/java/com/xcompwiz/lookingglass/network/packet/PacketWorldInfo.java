@@ -6,7 +6,6 @@ import com.xcompwiz.lookingglass.client.proxyworld.ProxyWorldManager;
 import com.xcompwiz.lookingglass.client.proxyworld.WorldView;
 import com.xcompwiz.lookingglass.log.LoggerUtils;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -51,7 +50,7 @@ public class PacketWorldInfo extends PacketHandlerBase {
 	}
 
 	@Override
-	public void handle(ByteBuf in, EntityPlayer player) {
+	public void handle(PacketBuffer in, EntityPlayer player) {
 		int dimension = in.readInt();
 		int posX = in.readInt();
 		int posY = in.readInt();

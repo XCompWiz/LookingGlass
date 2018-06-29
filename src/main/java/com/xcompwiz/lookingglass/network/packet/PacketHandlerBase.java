@@ -2,7 +2,6 @@ package com.xcompwiz.lookingglass.network.packet;
 
 import com.xcompwiz.lookingglass.network.LookingGlassPacketManager;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -16,7 +15,7 @@ public abstract class PacketHandlerBase {
 	/**
 	 * Called by our packet manager to process packet data
 	 */
-	public abstract void handle(ByteBuf data, EntityPlayer player);
+	public abstract void handle(PacketBuffer data, EntityPlayer player);
 
 	/**
 	 * Used by the progeny of this class in order to produce and prepare the buffer for packet data. Includes writing the correct packet id for the packet.

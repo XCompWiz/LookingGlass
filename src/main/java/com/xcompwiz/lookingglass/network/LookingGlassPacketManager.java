@@ -5,11 +5,11 @@ import java.util.HashMap;
 import com.xcompwiz.lookingglass.log.LoggerUtils;
 import com.xcompwiz.lookingglass.network.packet.PacketHandlerBase;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLEventChannel;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
@@ -64,7 +64,7 @@ public class LookingGlassPacketManager {
 	public void onPacketData(NetworkManager manager, FMLProxyPacket packet, EntityPlayer player) {
 		try {
 			if (packet == null || packet.payload() == null) { throw new RuntimeException("Empty packet sent to " + CHANNEL + " channel"); }
-			ByteBuf data = packet.payload();
+			PacketBuffer data = new PacketBuffer(packet.payload());
 			byte type = data.readByte();
 
 			try {

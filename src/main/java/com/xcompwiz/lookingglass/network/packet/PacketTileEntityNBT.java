@@ -2,7 +2,6 @@ package com.xcompwiz.lookingglass.network.packet;
 
 import com.xcompwiz.lookingglass.client.proxyworld.ProxyWorldManager;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,7 +30,7 @@ public class PacketTileEntityNBT extends PacketHandlerBase {
 	}
 
 	@Override
-	public void handle(ByteBuf data, EntityPlayer player) {
+	public void handle(PacketBuffer data, EntityPlayer player) {
 		int dimension = data.readInt();
 		int xPos = data.readInt();
 		int yPos = data.readInt();

@@ -3,7 +3,6 @@ package com.xcompwiz.lookingglass.network.packet;
 import com.xcompwiz.lookingglass.client.proxyworld.WorldView;
 import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
@@ -20,7 +19,7 @@ public class PacketCloseView extends PacketHandlerBase {
 	}
 
 	@Override
-	public void handle(ByteBuf data, EntityPlayer player) {
+	public void handle(PacketBuffer data, EntityPlayer player) {
 		if (ModConfigs.disabled) return;
 
 		//TODO: make closing viewpoint aware.  See PacketCreateView

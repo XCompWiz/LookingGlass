@@ -7,7 +7,6 @@ import com.xcompwiz.lookingglass.proxyworld.ChunkFinder;
 import com.xcompwiz.lookingglass.proxyworld.ChunkFinderManager;
 import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -44,7 +43,7 @@ public class PacketCreateView extends PacketHandlerBase {
 	}
 
 	@Override
-	public void handle(ByteBuf data, EntityPlayer player) {
+	public void handle(PacketBuffer data, EntityPlayer player) {
 		if (ModConfigs.disabled) return;
 		int dim = data.readInt();
 		int xPos = data.readInt();
