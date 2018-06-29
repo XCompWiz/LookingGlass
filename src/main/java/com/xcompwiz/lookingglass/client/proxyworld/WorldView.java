@@ -106,8 +106,9 @@ public class WorldView implements IWorldView {
 
 	public void onChunkReceived(int cx, int cz) {
 		this.hasChunks = true;
-		int cam_cx = MathHelper.floor_double(this.camera.getX()) >> 4;
-		int cam_cz = MathHelper.floor_double(this.camera.getZ()) >> 4;
+		BlockPos camPos = this.camera.getPosition();
+		int cam_cx = camPos.getX() >> 4;
+		int cam_cz = camPos.getZ() >> 4;
 		if (cam_cx >= cx - 1 && cam_cx <= cx + 1 && cam_cz > cz - 1 && cam_cz < cz + 1) this.camera.refreshAnimator();
 	}
 
@@ -138,7 +139,7 @@ public class WorldView implements IWorldView {
 	 */
 	public void replaceWorldObject(WorldClient world) {
 		this.worldObj = world;
-		this.camera.worldObj = world;
+		this.camera.world = world;
 		this.effectRenderer.clearEffects(world);
 		this.renderGlobal.setWorldAndLoadRenderers(world);
 	}

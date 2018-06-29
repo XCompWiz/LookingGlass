@@ -1,5 +1,6 @@
 package com.xcompwiz.lookingglass.api.view;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 public interface IViewCamera {
@@ -35,26 +36,14 @@ public interface IViewCamera {
 
 	/**
 	 * Sets the position of the camera
-	 * @param x X Coordinate (Block space)
-	 * @param y Y Coordinate (Block space)
-	 * @param z Z Coordinate (Block space)
+	 * @param pos Block space position
 	 */
 	public void setLocation(double x, double y, double z);
 
 	/**
-	 * @return The camera's X coordinate (Block space)
+	 * @return The camera's Block space position
 	 */
-	public double getX();
-
-	/**
-	 * @return The camera's Y coordinate (Block space)
-	 */
-	public double getY();
-
-	/**
-	 * @return The camera's Z coordinate (Block space)
-	 */
-	public double getZ();
+	public BlockPos getPosition();
 
 	/**
 	 * This is provided to allow for checking for air blocks and similar. Technically, it is a WorldClient object, but it is provided as a IBlockAccess to
@@ -66,20 +55,18 @@ public interface IViewCamera {
 
 	/**
 	 * An easy check for if a chunk exists in the local data copy
-	 * @param x The X coordinate in block space
-	 * @param z The Z coordinate in block space
+	 * @param pos the block space position
 	 * @return True if the chunk at those coordinates is available locally
 	 */
-	public boolean chunkExists(int x, int z);
+	public boolean chunkExists(BlockPos pos);
 
 	/**
 	 * Since LookingGlass utilizes partial chunk loading to minimize data traffic and storage, it's useful to be able to check if certain levels of a chunk are
 	 * loaded locally.
-	 * @param x The X coordinate in block space
-	 * @param z The Z coordinate in block space
-	 * @param yl1 The lower (closer to 0) y coordinate of the levels to check for in block space
-	 * @param yl2 The larger (farther from 0) y coordinate of the levels to check for in block space
+	 * @param pos the block space position
+	 * @param startY The lower (closer to 0) y coordinate of the levels to check for in block space
+	 * @param endY The larger (farther from 0) y coordinate of the levels to check for in block space
 	 * @return True if the levels are loaded locally
 	 */
-	public boolean chunkLevelsExist(int x, int z, int yl1, int yl2);
+	public boolean chunkLevelsExist(BlockPos pos, int startY, int endY);
 }

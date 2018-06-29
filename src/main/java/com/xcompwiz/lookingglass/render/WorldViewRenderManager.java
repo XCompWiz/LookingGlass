@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.BlockPos;
 
 public class WorldViewRenderManager {
 	public static void onRenderTick(PrintStream printstream) {
@@ -55,7 +55,8 @@ public class WorldViewRenderManager {
 
 					try {
 						mc.renderGlobal.updateClouds();
-						mc.theWorld.doVoidFogParticles(MathHelper.floor_double(activeview.camera.getX()), MathHelper.floor_double(activeview.camera.getY()), MathHelper.floor_double(activeview.camera.getZ()));
+						BlockPos camPos = activeview.camera.getPosition();
+						mc.world.doVoidFogParticles(camPos.getX(), camPos.getY(), camPos.getZ());
 						mc.effectRenderer.updateEffects();
 					} catch (Exception e) {
 						LoggerUtils.error("Client Proxy Dim had error while updating render elements: %s", e.getLocalizedMessage());

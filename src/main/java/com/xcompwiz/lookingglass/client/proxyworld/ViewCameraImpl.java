@@ -3,6 +3,7 @@ package com.xcompwiz.lookingglass.client.proxyworld;
 import com.xcompwiz.lookingglass.api.view.IViewCamera;
 import com.xcompwiz.lookingglass.entity.EntityCamera;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 public class ViewCameraImpl implements IViewCamera {
@@ -14,7 +15,9 @@ public class ViewCameraImpl implements IViewCamera {
 
 	@Override
 	public void addRotations(float yaw, int pitch) {
-		this.camera.setAngles(yaw, pitch);
+		//FIXME: Adds par1*0.15 to the entity's yaw, and *subtracts* par2*0.15 from the pitch. Clamps pitch from -90 to 90. Both arguments in degrees.
+        this.camera.rotationYaw = yaw % 360.0F;
+        this.camera.rotationPitch = pitch % 360.0F;
 	}
 
 	@Override
@@ -45,33 +48,23 @@ public class ViewCameraImpl implements IViewCamera {
 	}
 
 	@Override
-	public double getX() {
-		return this.camera.getX();
-	}
-
-	@Override
-	public double getY() {
-		return this.camera.getY();
-	}
-
-	@Override
-	public double getZ() {
-		return this.camera.getZ();
+	public BlockPos getPosition() {
+		return this.camera.getPosition();
 	}
 
 	@Override
 	public IBlockAccess getBlockData() {
-		return this.camera.worldObj;
+		return this.camera.world;
 	}
 
 	@Override
-	public boolean chunkExists(int x, int z) {
-		return !camera.worldObj.getChunkFromBlockCoords(x, z).isEmpty();
+	public boolean chunkExists(BlockPos pos) {
+		return !camera.world.getChunkFromBlockCoords(pos).isEmpty();
 	}
 
 	@Override
-	public boolean chunkLevelsExist(int x, int z, int yl1, int yl2) {
-		return !camera.worldObj.getChunkFromBlockCoords(x, z).getAreLevelsEmpty(yl1, yl2);
+	public boolean chunkLevelsExist(BlockPos pos, int startY, int endY) {
+		return !camera.world.getChunkFromBlockCoords(pos).isEmptyBetween(startY, endY);
 	}
 
 }

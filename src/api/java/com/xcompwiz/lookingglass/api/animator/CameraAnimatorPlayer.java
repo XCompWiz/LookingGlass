@@ -56,7 +56,7 @@ public class CameraAnimatorPlayer implements ICameraAnimator {
 		// This animator is incomplete and broken. It's a rough approximation I made at 4AM one night.
 		// However, it's also pretty cool looking, so I'm not going to bother fixing it. :P
 		// Note: Needs base yaw and pitch of view
-		if (reference.worldObj.provider.getDimension() != player.worldObj.provider.getDimension()) return;
+		if (reference.world.provider.getDimension() != player.world.provider.getDimension()) return;
 
 		// A standard accumulator trick to force periodic rechecks of the y position. Probably superfluous.
 		// Ticks every 10 seconds
@@ -65,9 +65,11 @@ public class CameraAnimatorPlayer implements ICameraAnimator {
 			accum -= 10000;
 		}
 		if (updateY) updateTargetPosition();
-		double dx = player.getX() - reference.getX();
-		double dy = player.getY() - (reference.getY() + player.yOffset);
-		double dz = player.getZ() - reference.getZ();
+		BlockPos playerPos = player.getPosition();
+		BlockPos referencePos = reference.getPosition();
+		double dx = playerPos.getX() - referencePos.getX();
+		double dy = playerPos.getY() - (referencePos.getY() + player.getEyeHeight());
+		double dz = playerPos.getZ() - referencePos.getZ();
 		double length = Math.sqrt(dx * dx + dz * dz + dy * dy); //TODO: Needs Go Faster
 		float yaw = -(float) Math.atan2(dx, dz);
 		yaw *= 180 / Math.PI;
@@ -80,22 +82,25 @@ public class CameraAnimatorPlayer implements ICameraAnimator {
 
 	private void updateTargetPosition() {
 		updateY = false;
-		int x = target.getX();
-		int y = target.getY();
-		int z = target.getZ();
-		if (!camera.chunkExists(x, z)) {
-			if (camera.getBlockData().getBlock(x, y, z).getBlocksMovement(camera.getBlockData(), x, y, z)) {
-				while (y > 0 && camera.getBlockData().getBlock(x, --y, z).getBlocksMovement(camera.getBlockData(), x, y, z))
-					;
-				if (y == 0) y = target.getY();
-				else y += 2;
+		BlockPos temp = target;
+		if (camera.chunkExists(temp)) {
+			if (camera.getBlockData().getBlockState(temp).getMaterial().blocksMovement()) {
+				while (temp.getY() > 0 && camera.getBlockData().getBlockState(temp).getMaterial().blocksMovement())
+					temp = temp.down();
+				
+				if (temp.getY() <= 0)
+					temp = target;
+				else
+					temp = temp.up(2);
 			} else {
-				while (y < 256 && !camera.getBlockData().getBlock(x, ++y, z).getBlocksMovement(camera.getBlockData(), x, y, z))
+				while (temp.getY() < 256 && !camera.getBlockData().getBlockState(temp).getMaterial().blocksMovement())
 					;
-				if (y == 256) y = target.getY();
-				else ++y;
+				if (temp.getY() >= 256)
+					temp = target;
+				else
+					temp = temp.up();
 			}
-			target = new BlockPos(x, y, z);
+			target = temp;
 		}
 	}
 
