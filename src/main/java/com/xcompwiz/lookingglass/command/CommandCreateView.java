@@ -6,23 +6,32 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
 public class CommandCreateView extends CommandBaseAdv {
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "lg-viewdim";
 	}
 
+	/**
+	 * Return the required permission level for this command.
+	 */
 	@Override
-	public String getCommandUsage(ICommandSender par1ICommandSender) {
-		return "/" + this.getCommandName() + " targetdim [dim, x, y, z]";
+	public int getRequiredPermissionLevel() {
+		return 2;
 	}
 
 	@Override
-	public void processCommand(ICommandSender agent, String[] args) {
+	public String getUsage(ICommandSender par1ICommandSender) {
+		return "/" + this.getName() + " targetdim [dim, x, y, z]";
+	}
+
+	@Override
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		int targetdim = 0;
 		Integer dim = null;
 		BlockPos coords = null;
@@ -30,25 +39,25 @@ public class CommandCreateView extends CommandBaseAdv {
 		//XXX: Set Coordinates of view location?
 		if (args.length > 0) {
 			String sTarget = args[0];
-			targetdim = parseInt(agent, sTarget);
+			targetdim = parseInt(sTarget);
 		} else {
 			throw new WrongUsageException("Could not parse command.");
 		}
 		if (args.length > 4) {
-			dim = parseInt(agent, args[1]);
+			dim = parseInt(args[1]);
 			Entity caller = null;
 			try {
-				caller = getCommandSenderAsPlayer(agent);
+				caller = getCommandSenderAsPlayer(sender);
 			} catch (Exception e) {
 			}
-			int x = (int) handleRelativeNumber(agent, (caller != null ? caller.getX() : 0), args[2]);
-			int y = (int) handleRelativeNumber(agent, (caller != null ? caller.getY() : 0), args[3], 0, 0);
-			int z = (int) handleRelativeNumber(agent, (caller != null ? caller.getZ() : 0), args[4]);
+			int x = (int) handleRelativeNumber(sender, (caller != null ? caller.posX : 0), args[2]);
+			int y = (int) handleRelativeNumber(sender, (caller != null ? caller.posY : 0), args[3], 0, 0);
+			int z = (int) handleRelativeNumber(sender, (caller != null ? caller.posZ : 0), args[4]);
 			coords = new BlockPos(x, y, z);
 		}
 		if (coords == null) {
-			dim = getSenderDimension(agent);
-			coords = agent.getPlayerCoordinates();
+			dim = getSenderDimension(sender);
+			coords = sender.getPosition();
 		}
 		if (coords == null) throw new WrongUsageException("Location Required");
 
@@ -56,8 +65,8 @@ public class CommandCreateView extends CommandBaseAdv {
 		if (worldObj == null) { throw new CommandException("The target world is not loaded"); }
 
 		EntityPortal portal = new EntityPortal(worldObj, targetdim, coords.getX(), coords.getY(), coords.getZ());
-		worldObj.spawnEntityInWorld(portal);
+		worldObj.spawnEntity(portal);
 
-		sendToAdmins(agent, "A window to dimension " + targetdim + " has been created.", new Object[0]);
+		sendToAdmins(sender, "A window to dimension " + targetdim + " has been created.", new Object[0]);
 	}
 }
