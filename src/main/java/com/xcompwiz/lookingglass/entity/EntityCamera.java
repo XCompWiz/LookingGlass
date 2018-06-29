@@ -31,15 +31,14 @@ public class EntityCamera extends EntityPlayerSP {
 	private float				fovmultiplier	= 1;
 
 	public EntityCamera(World worldObj, BlockPos spawn) {
-		super(Minecraft.getMinecraft(), worldObj, Minecraft.getMinecraft().getSession(), null, null);
-		this.target = spawn;
+		super(Minecraft.getMinecraft(), worldObj, Minecraft.getMinecraft().getConnection(), null, null);
+		target = spawn;
 		if (target == null) {
 			defaultSpawn = true;
-			BlockPos cc = worldObj.provider.getSpawnPoint();
-			int y = updateTargetPosition(cc);
-			target = new BlockPos(cc.getX(), y, cc.getZ());
+			BlockPos pos = worldObj.provider.getSpawnPoint();
+			target = calculateOpenTarget(pos);
 		}
-		this.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
+		this.setPosition(target.getX(), target.getY(), target.getZ());
 	}
 
 	public void setAnimator(ICameraAnimator animator) {
@@ -54,34 +53,35 @@ public class EntityCamera extends EntityPlayerSP {
 		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.0D);
 	}
 
-	public void updateWorldSpawn(BlockPos cc) {
+	public void updateWorldSpawn(BlockPos pos) {
 		if (defaultSpawn) {
-			int y = updateTargetPosition(cc);
-			target = new BlockPos(cc.getX(), y, cc.getZ());
+			target = calculateOpenTarget(pos);
 			this.setPositionAndUpdate(target.getX(), target.getY(), target.getZ());
-			if (animator != null) animator.setTarget(cc);
+			if (animator != null) animator.setTarget(pos);
 			this.refreshAnimator();
 		}
 	}
 
-	private int updateTargetPosition(BlockPos target) {
-		int x = target.getX();
-		int y = target.getY();
-		int z = target.getZ();
-		if (!this.worldObj.getChunkFromBlockCoords(x, z).isEmpty()) {
-			if (this.worldObj.getBlock(x, y, z).getBlocksMovement(this.worldObj, x, y, z)) {
-				while (y > 0 && this.worldObj.getBlock(x, --y, z).getBlocksMovement(this.worldObj, x, y, z))
-					;
-				if (y == 0) y = target.getY();
-				else ++y;
-			} else {
-				while (y < 256 && !this.worldObj.getBlock(x, ++y, z).getBlocksMovement(this.worldObj, x, y, z))
-					;
-				if (y == 256) y = target.getY();
+	private BlockPos calculateOpenTarget(BlockPos target) {
+		BlockPos temp = target;
+		if (!this.world.getChunkFromBlockCoords(temp).isEmpty()) {
+			if (world.getBlockState(target).getMaterial().blocksMovement()) {
+				while (temp.getY() > 0 && this.world.getBlockState(temp).getMaterial().blocksMovement())
+					temp = temp.down();
+				
+				if (temp.getY() <= 0)
+					temp = target;
+				else
+					temp = temp.up();
+			} else { 
+				while (temp.getY() < 256 && !this.world.getBlockState(temp).getMaterial().blocksMovement())
+					temp = temp.up();
+				
+				if (temp.getY() >= 256)
+					temp = target;
 			}
-			return y;
 		}
-		return target.getY();
+		return temp;
 	}
 
 	public void refreshAnimator() {
@@ -93,7 +93,7 @@ public class EntityCamera extends EntityPlayerSP {
 	}
 
 	@Override
-	public float getFOVMultiplier() {
+	public float getFovModifier() {
 		return fovmultiplier;
 	}
 
@@ -119,11 +119,6 @@ public class EntityCamera extends EntityPlayerSP {
 	}
 
 	@Override
-	protected boolean isAIEnabled() {
-		return false;
-	}
-
-	@Override
 	public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {}
 
 	@Override
@@ -133,34 +128,7 @@ public class EntityCamera extends EntityPlayerSP {
 	public void setAIMoveSpeed(float par1) {}
 
 	@Override
-	protected void updateAITasks() {}
-
-	@Override
-	public ItemStack getHeldItem() {
-		return null;
-	}
-
-	@Override
-	public ItemStack getEquipmentInSlot(int par1) {
-		return null;
-	}
-
-	@Override
-	public void setCurrentItemOrArmor(int par1, ItemStack par2ItemStack) {}
-
-	@Override
-	public ItemStack[] getLastActiveItems() {
-		return null;
-	}
-
-	@Override
 	protected void dropEquipment(boolean par1, int par2) {}
-
-	@Override
-	protected void fall(float par1) {}
-
-	@Override
-	protected void updateFallState(double par1, boolean par3) {}
 
 	@Override
 	protected void onDeathUpdate() {
@@ -168,31 +136,13 @@ public class EntityCamera extends EntityPlayerSP {
 	}
 
 	@Override
-	public EntityLivingBase getAITarget() {
-		return null;
-	}
-
-	@Override
 	public void setRevengeTarget(EntityLivingBase par1) {}
-
-	@Override
-	public EntityLivingBase getLastAttacker() {
-		return null;
-	}
-
-	@Override
-	public void setLastAttacker(Entity par1) {}
 
 	@Override
 	protected void updatePotionEffects() {}
 
 	@Override
 	public void clearActivePotions() {}
-
-	@Override
-	public boolean isPotionActive(int par1) {
-		return false;
-	}
 
 	@Override
 	public boolean isPotionActive(Potion par1) {
@@ -218,12 +168,6 @@ public class EntityCamera extends EntityPlayerSP {
 	}
 
 	@Override
-	public void removePotionEffectClient(int par1) {}
-
-	@Override
-	public void removePotionEffect(int par1) {}
-
-	@Override
 	protected void onNewPotionEffect(PotionEffect par1) {}
 
 	@Override
@@ -245,7 +189,7 @@ public class EntityCamera extends EntityPlayerSP {
 
 	@Override
 	public void onDeath(DamageSource par1) {
-		this.worldObj.setEntityState(this, (byte) 3);
+		this.world.setEntityState(this, (byte) 3);
 	}
 
 	@Override
@@ -275,9 +219,6 @@ public class EntityCamera extends EntityPlayerSP {
 	protected void damageEntity(DamageSource par1, float par2) {}
 
 	@Override
-	public void swingItem() {}
-
-	@Override
 	protected void updateArmSwingProgress() {}
 
 	@Override
@@ -290,9 +231,6 @@ public class EntityCamera extends EntityPlayerSP {
 
 	@Override
 	public void dismountEntity(Entity par1Entity) {}
-
-	@Override
-	public void moveEntityWithHeading(float par1, float par2) {}
 
 	@Override
 	public void updateRidden() {}
@@ -334,19 +272,6 @@ public class EntityCamera extends EntityPlayerSP {
 	}
 
 	@Override
-	public boolean handleLavaMovement() {
-		return false;
-	}
-
-	@Override
-	public void moveFlying(float par1, float par2, float par3) {}
-
-	@Override
-	public float getBrightness(float par1) {
-		return 0;
-	}
-
-	@Override
 	public void applyEntityCollision(Entity par1Entity) {}
 
 	@Override
@@ -371,14 +296,6 @@ public class EntityCamera extends EntityPlayerSP {
 
 	@Override
 	public void onStruckByLightning(EntityLightningBolt par1) {}
-
-	@Override
-	public boolean isEntityInvulnerable() {
-		return true;
-	}
-
-	@Override
-	public void travelToDimension(int par1) {}
 
 	@Override
 	public boolean shouldRenderInPass(int pass) {
