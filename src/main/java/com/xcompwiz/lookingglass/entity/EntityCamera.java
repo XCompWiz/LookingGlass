@@ -62,23 +62,24 @@ public class EntityCamera extends EntityPlayerSP {
 		}
 	}
 
+	//XXX: functionally identical to function in CameraAnimatorPivot and CameraAnimatorPlayer
 	private BlockPos calculateOpenTarget(BlockPos target) {
 		BlockPos temp = target;
 		if (!this.world.getChunkFromBlockCoords(temp).isEmpty()) {
 			if (world.getBlockState(target).getMaterial().blocksMovement()) {
+				while (temp.getY() < 256 && !this.world.getBlockState(temp).getMaterial().blocksMovement())
+					temp = temp.up();
+				
+				if (temp.getY() >= 256)
+					temp = target;
+			} else { 
 				while (temp.getY() > 0 && this.world.getBlockState(temp).getMaterial().blocksMovement())
 					temp = temp.down();
 				
 				if (temp.getY() <= 0)
 					temp = target;
 				else
-					temp = temp.up();
-			} else { 
-				while (temp.getY() < 256 && !this.world.getBlockState(temp).getMaterial().blocksMovement())
-					temp = temp.up();
-				
-				if (temp.getY() >= 256)
-					temp = target;
+					temp = temp.up(2);
 			}
 		}
 		return temp;

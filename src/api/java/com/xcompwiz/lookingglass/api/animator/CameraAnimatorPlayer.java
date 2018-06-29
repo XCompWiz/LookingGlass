@@ -80,11 +80,20 @@ public class CameraAnimatorPlayer implements ICameraAnimator {
 		camera.setPitch(pitch);
 	}
 
+	//XXX: functionally identical to function in EntityCamera and CameraAnimatorPivot
 	private void updateTargetPosition() {
 		updateY = false;
 		BlockPos temp = target;
 		if (camera.chunkExists(temp)) {
 			if (camera.getBlockData().getBlockState(temp).getMaterial().blocksMovement()) {
+				while (temp.getY() < 256 && !camera.getBlockData().getBlockState(temp).getMaterial().blocksMovement())
+					temp = temp.up();
+
+				if (temp.getY() >= 256)
+					temp = target;
+				else
+					temp = temp.up();
+			} else {
 				while (temp.getY() > 0 && camera.getBlockData().getBlockState(temp).getMaterial().blocksMovement())
 					temp = temp.down();
 				
@@ -92,13 +101,6 @@ public class CameraAnimatorPlayer implements ICameraAnimator {
 					temp = target;
 				else
 					temp = temp.up(2);
-			} else {
-				while (temp.getY() < 256 && !camera.getBlockData().getBlockState(temp).getMaterial().blocksMovement())
-					;
-				if (temp.getY() >= 256)
-					temp = target;
-				else
-					temp = temp.up();
 			}
 			target = temp;
 		}
