@@ -46,7 +46,7 @@ public class LookingGlass {
 	public static final String	MODID	= "lookingglass";
 	public static final String	VERSION	= "@VERSION@";
 
-	@Instance(LookingGlass.MODID)
+	@Instance(MODID)
 	public static LookingGlass	instance;
 
 	@SidedProxy(clientSide = "com.xcompwiz.lookingglass.client.ClientProxy", serverSide = "com.xcompwiz.lookingglass.core.CommonProxy")
@@ -79,12 +79,14 @@ public class LookingGlass {
 
 		// Initialize the API provider system.  Beware, this way be dragons.
 		APIProviderImpl.init();
+		
+		sidedProxy.preinit();
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		// Our one and only entity.
-		EntityRegistry.registerModEntity(new ResourceLocation(LookingGlass.MODID, "portal"), EntityPortal.class, "portal", 216, this, 64, 10, false);
+		EntityRegistry.registerModEntity(new ResourceLocation(MODID, "portal"), EntityPortal.class, "portal", 216, instance, 64, 10, false);
 		
 		sidedProxy.init();
 	}

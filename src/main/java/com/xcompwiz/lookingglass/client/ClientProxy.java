@@ -18,7 +18,7 @@ public class ClientProxy extends CommonProxy {
 	 * Run during mod init.
 	 */
 	@Override
-	public void init() {
+	public void preinit() {
 		// We register the portal renderer here
 		RenderingRegistry.registerEntityRenderingHandler(EntityPortal.class, new RenderPortal.Factory());
 	}
