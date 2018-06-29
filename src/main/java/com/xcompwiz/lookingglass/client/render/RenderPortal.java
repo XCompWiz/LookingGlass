@@ -53,10 +53,10 @@ public class RenderPortal extends Render<EntityPortal> {
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		vb.pos(- width/2, 0, 0.01f).tex(0.0D, 1.0D).endVertex();
-		vb.pos(width/2, 0, 0.01f).tex(1.0D, 1.0D).endVertex();
-		vb.pos(width/2, height, 0.01f).tex(1.0D, 0.0D).endVertex();
-		vb.pos(- width/2,  height, 0.01f).tex(0.0D, 0.0D).endVertex();
+		vb.pos(- width/2, 0, 0.01f).tex(0.0D, 0.0D).endVertex();
+		vb.pos(width/2, 0, 0.01f).tex(1.0D, 0.0D).endVertex();
+		vb.pos(width/2, height, 0.01f).tex(1.0D, 1.0D).endVertex();
+		vb.pos(- width/2,  height, 0.01f).tex(0.0D, 1.0D).endVertex();
 		tes.draw();
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
