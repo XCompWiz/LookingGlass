@@ -16,7 +16,7 @@ import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.relauncher.Side;
@@ -64,10 +64,14 @@ public class ProxyWorldManager {
 		if (ModConfigs.disabled) return null;
 		WorldClient proxyworld = proxyworlds.get(dimid);
 		if (proxyworld == null) {
-			if (!DimensionManager.isDimensionRegistered(dimid)) return null;
+			if (!DimensionManager.isDimensionRegistered(dimid))
+				return null;
+
 			// We really don't want to be doing this during a render cycle
-			if (Minecraft.getMinecraft().thePlayer instanceof EntityCamera) return null; //TODO: This check probably needs to be altered
-			WorldClient theWorld = Minecraft.getMinecraft().theWorld;
+			if (Minecraft.getMinecraft().player instanceof EntityCamera) //TODO: This check probably needs to be altered
+				return null;
+			
+			WorldClient theWorld = Minecraft.getMinecraft().world;
 			if (theWorld != null && theWorld.provider.getDimension() == dimid) proxyworld = theWorld;
 			if (proxyworld == null) proxyworld = new ProxyWorld(dimid);
 			proxyworlds.put(dimid, proxyworld);
@@ -80,7 +84,7 @@ public class ProxyWorldManager {
 		Collection<WorldView> set = worldviewsets.remove(dimId);
 		if (set != null && set.size() > 0) LoggerUtils.warn("Unloading ProxyWorld with live views");
 		WorldClient proxyworld = proxyworlds.remove(dimId);
-		WorldClient theWorld = Minecraft.getMinecraft().theWorld;
+		WorldClient theWorld = Minecraft.getMinecraft().world;
 		if (theWorld != null && theWorld == proxyworld) return;
 		if (proxyworld != null) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Unload(proxyworld));
 	}
@@ -115,10 +119,10 @@ public class ProxyWorldManager {
 
 		// Initialize the view rendering system
 		Minecraft mc = Minecraft.getMinecraft();
-		EntityLivingBase backup = mc.renderViewEntity;
-		mc.renderViewEntity = view.camera;
+		Entity backup = mc.getRenderViewEntity();
+		mc.setRenderViewEntity(view.camera);
 		view.getRenderGlobal().setWorldAndLoadRenderers(proxyworld);
-		mc.renderViewEntity = backup;
+		mc.setRenderViewEntity(backup);
 
 		// Inform the server of the new view
 		LookingGlassPacketManager.bus.sendToServer(PacketCreateView.createPacket(view));

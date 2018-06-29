@@ -49,16 +49,16 @@ public class LookingGlassPacketManager {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onPacketData(ClientCustomPacketEvent event) {
-		FMLProxyPacket pkt = event.packet;
+		FMLProxyPacket pkt = event.getPacket();
 
-		onPacketData(event.manager, pkt, Minecraft.getMinecraft().thePlayer);
+		onPacketData(event.getManager(), pkt, Minecraft.getMinecraft().player);
 	}
 
 	@SubscribeEvent
 	public void onPacketData(ServerCustomPacketEvent event) {
-		FMLProxyPacket pkt = event.packet;
+		FMLProxyPacket pkt = event.getPacket();
 
-		onPacketData(event.manager, pkt, ((NetHandlerPlayServer) event.handler).playerEntity);
+		onPacketData(event.getManager(), pkt, ((NetHandlerPlayServer) event.getHandler()).player);
 	}
 
 	public void onPacketData(NetworkManager manager, FMLProxyPacket packet, EntityPlayer player) {

@@ -11,7 +11,7 @@ import net.minecraft.world.WorldType;
 // FIXME: AAHH! Fake world classes! EXTERMINATE!
 public class ProxyWorld extends WorldClient {
 	public ProxyWorld(int dimensionID) {
-		super(Minecraft.getMinecraft().getNetHandler(), new WorldSettings(0L, GameType.SURVIVAL, true, false, WorldType.DEFAULT), dimensionID, Minecraft.getMinecraft().gameSettings.difficulty, Minecraft.getMinecraft().theWorld.theProfiler);
+		super(Minecraft.getMinecraft().getNetHandler(), new WorldSettings(0L, GameType.SURVIVAL, true, false, WorldType.DEFAULT), dimensionID, Minecraft.getMinecraft().gameSettings.difficulty, Minecraft.getMinecraft().world.profiler);
 	}
 
 	// TODO: In order to eliminate this class we may need an event in this function to allow canceling/redirecting sounds

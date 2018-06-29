@@ -9,7 +9,7 @@ import com.xcompwiz.lookingglass.client.render.RenderUtils;
 import com.xcompwiz.lookingglass.log.LoggerUtils;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -26,10 +26,10 @@ public class WorldViewRenderManager {
 
 		long renderT = Minecraft.getSystemTime();
 		//TODO: This and the renderWorldToTexture need to be remixed
-		WorldClient worldBackup = mc.theWorld;
+		WorldClient worldBackup = mc.world;
 		RenderGlobal renderBackup = mc.renderGlobal;
 		EffectRenderer effectBackup = mc.effectRenderer;
-		EntityClientPlayerMP playerBackup = mc.thePlayer;
+		EntityPlayerSP playerBackup = mc.player;
 		EntityLivingBase viewportBackup = mc.renderViewEntity;
 
 		//TODO: This is a hack to work around some of the vanilla rendering hacks... Yay hacks.
@@ -38,8 +38,8 @@ public class WorldViewRenderManager {
 
 		for (WorldClient proxyworld : worlds) {
 			if (proxyworld == null) continue;
-			mc.theWorld = proxyworld;
-			RenderManager.instance.set(mc.theWorld);
+			mc.world = proxyworld;
+			RenderManager.instance.set(mc.world);
 			for (WorldView activeview : ProxyWorldManager.getWorldViews(proxyworld.provider.getDimension())) {
 				if (activeview.hasChunks() && activeview.markClean()) {
 					activeview.startRender(renderT);
@@ -47,11 +47,11 @@ public class WorldViewRenderManager {
 					mc.renderGlobal = activeview.getRenderGlobal();
 					mc.effectRenderer = activeview.getEffectRenderer();
 					mc.renderViewEntity = activeview.camera;
-					mc.thePlayer = activeview.camera;
+					mc.player = activeview.camera;
 					//Other half of hack
 					activeview.camera.setFOVMult(fovmult); //Prevents the FOV from flickering
 					activeview.camera.inventory.currentItem = playerBackup.inventory.currentItem;
-					activeview.camera.inventory.mainInventory[playerBackup.inventory.currentItem] = currentClientItem; //Prevents the hand from flickering
+					activeview.camera.inventory.mainInventory.set(playerBackup.inventory.currentItem, currentClientItem); //Prevents the hand from flickering
 
 					try {
 						mc.renderGlobal.updateClouds();
@@ -73,11 +73,11 @@ public class WorldViewRenderManager {
 			}
 		}
 		mc.renderViewEntity = viewportBackup;
-		mc.thePlayer = playerBackup;
+		mc.player = playerBackup;
 		mc.effectRenderer = effectBackup;
 		mc.renderGlobal = renderBackup;
-		mc.theWorld = worldBackup;
-		RenderManager.instance.set(mc.theWorld);
+		mc.world = worldBackup;
+		RenderManager.instance.set(mc.world);
 	}
 
 }
