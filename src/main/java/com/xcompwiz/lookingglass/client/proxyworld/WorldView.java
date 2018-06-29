@@ -8,10 +8,9 @@ import com.xcompwiz.lookingglass.entity.EntityCamera;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,7 +30,7 @@ public class WorldView implements IWorldView {
 	private long					last_render_time	= -1;
 
 	private RenderGlobal			renderGlobal;
-	private EffectRenderer			effectRenderer;
+	private ParticleManager			particleManager;
 
 	private FrameBufferContainer	fbo;
 
@@ -43,7 +42,7 @@ public class WorldView implements IWorldView {
 		this.camera = new EntityCamera(worldObj, coords);
 		this.camerawrapper = new ViewCameraImpl(camera);
 		this.renderGlobal = new RenderGlobal(Minecraft.getMinecraft());
-		this.effectRenderer = new EffectRenderer(worldObj, Minecraft.getMinecraft().getTextureManager());
+		this.particleManager = new ParticleManager(worldObj, Minecraft.getMinecraft().getTextureManager());
 		// Technically speaking, this is poor practice as it leaks a reference to the view before it's done constructing.
 		this.fbo = FrameBufferContainer.createNewFramebuffer(this, width, height);
 	}
@@ -87,8 +86,8 @@ public class WorldView implements IWorldView {
 		return this.renderGlobal;
 	}
 
-	public EffectRenderer getEffectRenderer() {
-		return this.effectRenderer;
+	public ParticleManager getParticleManager() {
+		return this.particleManager;
 	}
 
 	@Override
@@ -140,7 +139,7 @@ public class WorldView implements IWorldView {
 	public void replaceWorldObject(WorldClient world) {
 		this.worldObj = world;
 		this.camera.world = world;
-		this.effectRenderer.clearEffects(world);
+		this.particleManager.clearEffects(world);
 		this.renderGlobal.setWorldAndLoadRenderers(world);
 	}
 

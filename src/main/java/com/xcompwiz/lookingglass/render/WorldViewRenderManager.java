@@ -11,10 +11,9 @@ import com.xcompwiz.lookingglass.log.LoggerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
@@ -28,25 +27,25 @@ public class WorldViewRenderManager {
 		//TODO: This and the renderWorldToTexture need to be remixed
 		WorldClient worldBackup = mc.world;
 		RenderGlobal renderBackup = mc.renderGlobal;
-		EffectRenderer effectBackup = mc.effectRenderer;
+		ParticleManager effectBackup = mc.effectRenderer;
 		EntityPlayerSP playerBackup = mc.player;
-		EntityLivingBase viewportBackup = mc.renderViewEntity;
+		Entity viewportBackup = mc.getRenderViewEntity();
 
 		//TODO: This is a hack to work around some of the vanilla rendering hacks... Yay hacks.
-		float fovmult = playerBackup.getFOVMultiplier();
+		float fovmult = playerBackup.getFovModifier();
 		ItemStack currentClientItem = playerBackup.inventory.getCurrentItem();
 
 		for (WorldClient proxyworld : worlds) {
 			if (proxyworld == null) continue;
 			mc.world = proxyworld;
-			RenderManager.instance.set(mc.world);
+			mc.getRenderManager().setWorld(mc.world);
 			for (WorldView activeview : ProxyWorldManager.getWorldViews(proxyworld.provider.getDimension())) {
 				if (activeview.hasChunks() && activeview.markClean()) {
 					activeview.startRender(renderT);
 
 					mc.renderGlobal = activeview.getRenderGlobal();
-					mc.effectRenderer = activeview.getEffectRenderer();
-					mc.renderViewEntity = activeview.camera;
+					mc.effectRenderer = activeview.getParticleManager();
+					mc.setRenderViewEntity(activeview.camera);
 					mc.player = activeview.camera;
 					//Other half of hack
 					activeview.camera.setFOVMult(fovmult); //Prevents the FOV from flickering
@@ -72,12 +71,12 @@ public class WorldViewRenderManager {
 				}
 			}
 		}
-		mc.renderViewEntity = viewportBackup;
+		mc.setRenderViewEntity(viewportBackup);
 		mc.player = playerBackup;
 		mc.effectRenderer = effectBackup;
 		mc.renderGlobal = renderBackup;
 		mc.world = worldBackup;
-		RenderManager.instance.set(mc.world);
+		mc.getRenderManager().setWorld(mc.world);
 	}
 
 }
