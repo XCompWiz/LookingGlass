@@ -43,7 +43,7 @@ public class CameraAnimatorPivot implements ICameraAnimator {
 	@Override
 	public void update(long dt) {
 		if (camera == null) return;
-		camera.addRotations(dt*0.1F, 0);
+		camera.addRotations(dt*0.025F, 0);
 		camera.setPitch(-pitch);
 
 		double x = Math.cos(Math.toRadians(camera.getYaw() + 90)) * radius;

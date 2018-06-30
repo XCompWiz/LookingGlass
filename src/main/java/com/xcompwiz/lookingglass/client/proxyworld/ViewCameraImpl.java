@@ -15,9 +15,11 @@ public class ViewCameraImpl implements IViewCamera {
 
 	@Override
 	public void addRotations(float yaw, int pitch) {
-        this.camera.rotationYaw += (yaw*0.15);
-        this.camera.rotationPitch -= (pitch*0.15);
+        this.camera.rotationYaw = (this.camera.rotationYaw + yaw) % 360.f;
+        this.camera.rotationPitch -= pitch;
         this.camera.rotationPitch = Math.max(-90, Math.min(90, this.camera.rotationPitch));
+        this.camera.prevRotationYaw = this.camera.rotationYaw;
+        this.camera.prevRotationPitch = this.camera.rotationPitch;
 	}
 
 	@Override
