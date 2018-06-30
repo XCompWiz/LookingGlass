@@ -43,7 +43,7 @@ public class RenderPortal extends Render<EntityPortal> {
 		GlStateManager.disableAlpha();
 		GlStateManager.disableLighting();
 
-		GL11.glPushMatrix();
+		GlStateManager.pushMatrix();
 
 		GlStateManager.translate(x, y, z);
 		GlStateManager.rotate(-entityYaw, 0.0F, 1.0F, 0.0F);
@@ -51,7 +51,7 @@ public class RenderPortal extends Render<EntityPortal> {
 		Tessellator tes = Tessellator.getInstance();
 		BufferBuilder vb = tes.getBuffer();
 
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
+		GlStateManager.bindTexture(texture);
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.pos(- width/2, 0, 0.01f).tex(0.0D, 0.0D).endVertex();
 		vb.pos(width/2, 0, 0.01f).tex(1.0D, 0.0D).endVertex();
@@ -59,7 +59,7 @@ public class RenderPortal extends Render<EntityPortal> {
 		vb.pos(- width/2,  height, 0.01f).tex(0.0D, 1.0D).endVertex();
 		tes.draw();
 
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GlStateManager.bindTexture(0);
 		//XXX: Make the back of the portals a little nicer
 		vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		vb.pos(- width/2,  height, -0.01f).tex(0.0D, 1.0D).endVertex();
@@ -67,7 +67,7 @@ public class RenderPortal extends Render<EntityPortal> {
 		vb.pos(width/2, 0, -0.01f).tex(1.0D, 0.0D).endVertex();
 		vb.pos(- width/2, 0, -0.01f).tex(0.0D, 0.0D).endVertex();
 		tes.draw();
-		GL11.glPopMatrix();
+		GlStateManager.popMatrix();
 
 		GlStateManager.enableLighting();
 		GlStateManager.enableAlpha();

@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -44,11 +45,11 @@ public class RenderUtils {
 			//mc.gameSettings.fovSetting = ;
 
 			//Set gl options
-			GL11.glViewport(0, 0, mc.displayWidth, mc.displayHeight);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			GlStateManager.viewport(0, 0, mc.displayWidth, mc.displayHeight);
+			GlStateManager.bindTexture(0);
 			EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, framebuffer);
-			GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.5f);
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+			GlStateManager.clearColor(1.0f, 0.0f, 0.0f, 0.5f);
+			GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT);
 
 			int i1 = mc.gameSettings.limitFramerate;
 			if (mc.isFramerateLimitBelowMax()) {

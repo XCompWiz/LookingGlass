@@ -12,7 +12,7 @@ import com.google.common.collect.MapMaker;
 import com.xcompwiz.lookingglass.client.proxyworld.WorldView;
 import com.xcompwiz.lookingglass.log.LoggerUtils;
 
-import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraft.client.renderer.GlStateManager;
 
 public class FrameBufferContainer {
 	/**
@@ -79,7 +79,7 @@ public class FrameBufferContainer {
 	// Always clean up your allocations
 	private synchronized void freeFrameBuffer() {
 		try {
-			if (this.texture != 0) GL11.glDeleteTextures(this.texture);
+			if (this.texture != 0) GlStateManager.deleteTexture(this.texture);
 			this.texture = 0;
 			if (depthBuffer != 0) EXTFramebufferObject.glDeleteRenderbuffersEXT(depthBuffer);
 			depthBuffer = 0;
@@ -101,16 +101,21 @@ public class FrameBufferContainer {
 		EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, this.framebuffer);
 
 		EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthBuffer);
-		if (MinecraftForgeClient.getStencilBits() == 0) EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, GL14.GL_DEPTH_COMPONENT24, width, height);
-		else EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, org.lwjgl.opengl.EXTPackedDepthStencil.GL_DEPTH24_STENCIL8_EXT, width, height);
+		
+		//TODO: Sort out stencil bit usage
+		//if (MinecraftForgeClient.getStencilBits() == 0)
+			EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, GL14.GL_DEPTH_COMPONENT24, width, height);
+		//else
+		//	EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, org.lwjgl.opengl.EXTPackedDepthStencil.GL_DEPTH24_STENCIL8_EXT, width, height);
 
 		EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthBuffer);
-		if (MinecraftForgeClient.getStencilBits() != 0) EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_STENCIL_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthBuffer);
+		//if (MinecraftForgeClient.getStencilBits() != 0)
+		//	EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_STENCIL_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthBuffer);
 
-		this.texture = GL11.glGenTextures(); //Release via: GL11.glDeleteTextures(colorTexture);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture);
-		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_INT, (java.nio.ByteBuffer) null);
+		this.texture = GlStateManager.generateTexture(); //Release via: GlStateManager.deleteTexture(colorTexture);
+		GlStateManager.bindTexture(this.texture);
+		GlStateManager.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GlStateManager.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_INT, null);
 		EXTFramebufferObject.glFramebufferTexture2DEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT, GL11.GL_TEXTURE_2D, this.texture, 0);
 
 		EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, 0);
