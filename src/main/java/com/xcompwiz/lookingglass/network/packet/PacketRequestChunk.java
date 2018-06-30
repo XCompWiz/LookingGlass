@@ -36,6 +36,6 @@ public class PacketRequestChunk extends PacketHandlerBase {
 		if (world == null) return;
 		Chunk chunk = world.getChunkFromChunkCoords(xPos, zPos);
 		if (!chunk.isLoaded()) chunk = world.getChunkProvider().loadChunk(xPos, zPos);
-		ServerPacketDispatcher.getInstance().addPacket(player, PacketChunkInfo.createPacket(chunk, true, yPos, dim));
+		ServerPacketDispatcher.getInstance().addPacket(player, PacketChunkInfo.createPacket(chunk, yPos, dim));
 	}
 }

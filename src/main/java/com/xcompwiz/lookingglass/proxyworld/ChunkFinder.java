@@ -92,7 +92,7 @@ public class ChunkFinder {
 							Chunk c2 = chunkProvider.provideChunk(data.x, data.z);
 							if (!c2.isLoaded()) c2 = chunkProvider.getLoadedChunk(data.x, data.z);
 
-							ServerPacketDispatcher.getInstance().addPacket(player, PacketChunkInfo.createPacket(c2, true, data.levels(), dimension));
+							ServerPacketDispatcher.getInstance().addPacket(player, PacketChunkInfo.createPacket(c2, data.levels(), dimension));
 						}
 					}
 				}
@@ -134,7 +134,7 @@ public class ChunkFinder {
 							ChunkData data = map[i][j];
 							Chunk c2 = chunkProvider.provideChunk(data.x, data.z);
 							if (!c2.isLoaded()) c2 = chunkProvider.getLoadedChunk(data.x, data.z);
-							ServerPacketDispatcher.getInstance().addPacket(player, PacketChunkInfo.createPacket(c2, true, data.levels(), dimension));
+							ServerPacketDispatcher.getInstance().addPacket(player, PacketChunkInfo.createPacket(c2, data.levels(), dimension));
 						}
 					}
 				}
@@ -152,7 +152,7 @@ public class ChunkFinder {
 						ChunkData data = map[i][j];
 						Chunk c2 = chunkProvider.provideChunk(data.x, data.z);
 						if (!c2.isLoaded()) c2 = chunkProvider.getLoadedChunk(data.x, data.z);
-						ServerPacketDispatcher.getInstance().addPacket(player, PacketChunkInfo.createPacket(c2, true, data.levels(), dimension));
+						ServerPacketDispatcher.getInstance().addPacket(player, PacketChunkInfo.createPacket(c2, data.levels(), dimension));
 					}
 				}
 			}
