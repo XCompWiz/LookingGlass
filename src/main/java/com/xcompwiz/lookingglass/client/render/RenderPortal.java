@@ -26,9 +26,7 @@ public class RenderPortal extends Render<EntityPortal> {
 	}
 
 	@Override
-	public void doRender(EntityPortal entity, double x, double y, double z, float entityYaw, float partial) {
-		if (!(entity instanceof EntityPortal)) return;
-		EntityPortal portal = (EntityPortal) entity;
+	public void doRender(EntityPortal portal, double x, double y, double z, float entityYaw, float partial) {
 		IWorldView activeview = portal.getActiveView();
 		if (activeview == null) return;
 
