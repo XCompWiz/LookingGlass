@@ -15,9 +15,9 @@ public class ViewCameraImpl implements IViewCamera {
 
 	@Override
 	public void addRotations(float yaw, int pitch) {
-		//FIXME: Adds par1*0.15 to the entity's yaw, and *subtracts* par2*0.15 from the pitch. Clamps pitch from -90 to 90. Both arguments in degrees.
-        this.camera.rotationYaw = yaw % 360.0F;
-        this.camera.rotationPitch = pitch % 360.0F;
+        this.camera.rotationYaw += (yaw*0.15);
+        this.camera.rotationPitch -= (pitch*0.15);
+        this.camera.rotationPitch = Math.max(-90, Math.min(90, this.camera.rotationPitch));
 	}
 
 	@Override

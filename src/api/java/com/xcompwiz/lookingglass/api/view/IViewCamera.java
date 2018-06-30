@@ -6,7 +6,7 @@ import net.minecraft.world.IBlockAccess;
 public interface IViewCamera {
 
 	/**
-	 * Adds par1*0.15 to the entity's yaw, and *subtracts* par2*0.15 from the pitch. Clamps pitch from -90 to 90. Both arguments in degrees.
+	 * Adds yaw*0.15 to the entity's yaw, and *subtracts* pitch*0.15 from the pitch. Clamps pitch from -90 to 90. Both arguments in degrees.
 	 * @param yaw The yaw to be added
 	 * @param pitch The pitch to be subtracted
 	 */

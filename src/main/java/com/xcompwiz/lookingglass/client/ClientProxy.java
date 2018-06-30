@@ -1,9 +1,12 @@
 package com.xcompwiz.lookingglass.client;
 
+import java.io.File;
+
 import com.xcompwiz.lookingglass.client.render.RenderPortal;
 import com.xcompwiz.lookingglass.core.CommonProxy;
 import com.xcompwiz.lookingglass.entity.EntityPortal;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -18,8 +21,11 @@ public class ClientProxy extends CommonProxy {
 	 * Run during mod init.
 	 */
 	@Override
-	public void preinit() {
+	public void preinit(File configroot) {
 		// We register the portal renderer here
 		RenderingRegistry.registerEntityRenderingHandler(EntityPortal.class, new RenderPortal.Factory());
+
+		// Main tick handler. Handles FML events.
+		MinecraftForge.EVENT_BUS.register(new EventHandlerClient(new File(configroot.getParentFile(), "logs/proxyworlds.log")));
 	}
 }

@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.xcompwiz.lookingglass.apiimpl.APIProviderImpl;
 import com.xcompwiz.lookingglass.command.CommandCreateView;
 import com.xcompwiz.lookingglass.core.CommonProxy;
-import com.xcompwiz.lookingglass.core.LookingGlassForgeEventHandler;
+import com.xcompwiz.lookingglass.core.EventHandlerCommon;
 import com.xcompwiz.lookingglass.entity.EntityPortal;
 import com.xcompwiz.lookingglass.imc.IMCHandler;
 import com.xcompwiz.lookingglass.network.LookingGlassPacketManager;
@@ -19,7 +19,6 @@ import com.xcompwiz.lookingglass.network.packet.PacketRequestTE;
 import com.xcompwiz.lookingglass.network.packet.PacketRequestWorldInfo;
 import com.xcompwiz.lookingglass.network.packet.PacketTileEntityNBT;
 import com.xcompwiz.lookingglass.network.packet.PacketWorldInfo;
-import com.xcompwiz.lookingglass.proxyworld.LookingGlassEventHandler;
 import com.xcompwiz.lookingglass.proxyworld.ModConfigs;
 
 import net.minecraft.command.ServerCommandManager;
@@ -70,17 +69,14 @@ public class LookingGlass {
 		// Load our basic configs
 		ModConfigs.loadConfigs(new Configuration(event.getSuggestedConfigurationFile()));
 
-		// Here we use the recommended config file to establish a good place to put a log file for any proxy world error logs.  Used primarily to log the full errors when ticking or rendering proxy worlds. 
-		File configroot = event.getSuggestedConfigurationFile().getParentFile();
-		// Main tick handler. Handles FML events.
-		MinecraftForge.EVENT_BUS.register(new LookingGlassEventHandler(new File(configroot.getParentFile(), "logs/proxyworlds.log")));
-		// Forge event handler
-		MinecraftForge.EVENT_BUS.register(new LookingGlassForgeEventHandler());
+		MinecraftForge.EVENT_BUS.register(new EventHandlerCommon());
 
 		// Initialize the API provider system.  Beware, this way be dragons.
 		APIProviderImpl.init();
 		
-		sidedProxy.preinit();
+		// Here we use the recommended config file to establish a good place to put a log file for any proxy world error logs.  Used primarily to log the full errors when ticking or rendering proxy worlds. 
+		File configroot = event.getSuggestedConfigurationFile().getParentFile();
+		sidedProxy.preinit(configroot);
 	}
 
 	@EventHandler

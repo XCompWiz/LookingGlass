@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
 public class WorldViewRenderManager {
+	
 	public static void onRenderTick(PrintStream printstream) {
 		Minecraft mc = Minecraft.getMinecraft();
 		Collection<WorldClient> worlds = ProxyWorldManager.getProxyworlds();
