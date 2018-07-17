@@ -83,5 +83,4 @@ public class RenderUtils {
 			mc.displayWidth = widthBackup;
 		}
 	}
-
 }
